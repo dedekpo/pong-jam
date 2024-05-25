@@ -9,7 +9,7 @@ import Blocker from "./components/Blocker";
 import { RefsProvider, useRefs } from "./contexts/RefsContext";
 import Opponent from "./components/Opponent";
 import Player from "./components/Player";
-import { precisionPositions } from "./config";
+// import { precisionPositions } from "./config";
 import { useGameStore, useScoreStore } from "./stores/game-store";
 import Score from "./ui/Score";
 export default function App() {
@@ -43,18 +43,18 @@ export default function App() {
   );
 }
 
-function TempAuxPrecisionBoxes() {
-  return (
-    <>
-      {Object.entries(precisionPositions).map(([key, value]) => (
-        <mesh key={key} position={value}>
-          <boxGeometry args={[1, 1, 1]} />
-          <meshBasicMaterial color="red" />
-        </mesh>
-      ))}
-    </>
-  );
-}
+// function TempAuxPrecisionBoxes() {
+//   return (
+//     <>
+//       {Object.entries(precisionPositions).map(([key, value]) => (
+//         <mesh key={key} position={value}>
+//           <boxGeometry args={[1, 1, 1]} />
+//           <meshBasicMaterial color="red" />
+//         </mesh>
+//       ))}
+//     </>
+//   );
+// }
 
 function BallOutSensor() {
   const { ballApi } = useRefs();
