@@ -1,9 +1,18 @@
 import { useRefs } from "../contexts/RefsContext";
+import { useGameStore, useScoreStore } from "../stores/game-store";
 
 export default function useBall() {
   const { ballApi } = useRefs();
-  function handleResetBall(player: "player" | "opponent") {
-    const playerModifier = player === "player" ? 1 : -1;
+  const { touchedLastBy, setTouchedLastBy } = useGameStore((state) => state);
+  const { setCanScore } = useScoreStore((state) => state);
+
+  function handleResetBall(player?: "player" | "opponent") {
+    const playerToReset = touchedLastBy === "player" ? "opponent" : "player";
+    const currentPlayer = player || playerToReset;
+    const playerModifier = currentPlayer === "player" ? 1 : -1;
+
+    setTouchedLastBy(undefined);
+    setCanScore(true);
 
     ballApi?.current?.setLinvel({ x: 0, y: 0, z: 0 }, true);
     ballApi?.current?.setAngvel({ x: 0, y: 0, z: 0 }, true);

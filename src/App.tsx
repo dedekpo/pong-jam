@@ -6,12 +6,12 @@ import { CuboidCollider, Physics } from "@react-three/rapier";
 import Ball from "./components/Ball";
 import Table from "./components/Table";
 import Blocker from "./components/Blocker";
-import { RefsProvider, useRefs } from "./contexts/RefsContext";
+import { RefsProvider } from "./contexts/RefsContext";
 import Opponent from "./components/Opponent";
 import Player from "./components/Player";
 // import { precisionPositions } from "./config";
-import { useGameStore, useScoreStore } from "./stores/game-store";
 import Score from "./ui/Score";
+import useBall from "./hooks/useBall";
 export default function App() {
   return (
     <div className="h-screen w-screen">
@@ -57,26 +57,11 @@ export default function App() {
 // }
 
 function BallOutSensor() {
-  const { ballApi } = useRefs();
-  const { touchedLastBy } = useGameStore((state) => state);
-  const { increaseOpponentScore, increasePlayerScore } = useScoreStore(
-    (state) => state
-  );
-  function handleResetBall() {
-    ballApi?.current?.setLinvel({ x: 0, y: 0, z: 0 }, true);
-    ballApi?.current?.setAngvel({ x: 0, y: 0, z: 0 }, true);
-    ballApi?.current?.setTranslation({ x: 0, y: 10, z: 30 }, true);
+  const { handleResetBall } = useBall();
 
-    if (touchedLastBy === "player") {
-      increasePlayerScore(1);
-      return;
-    }
-
-    increaseOpponentScore(1);
-  }
   return (
     <CuboidCollider
-      onIntersectionEnter={handleResetBall}
+      onIntersectionEnter={() => handleResetBall()}
       sensor
       args={[200, 3, 200]}
       position={[0, -15, 0]}

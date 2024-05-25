@@ -5,25 +5,30 @@ import useBall from "../hooks/useBall";
 
 export default function Table() {
   const { touchedLastBy, setTouchedLastTable } = useGameStore((state) => state);
-  const { increaseOpponentScore, increasePlayerScore } = useScoreStore(
-    (state) => state
-  );
+  const { increaseOpponentScore, increasePlayerScore, canScore, setCanScore } =
+    useScoreStore((state) => state);
   const { handleResetBall } = useBall();
 
   function handleTableCollision(player: "player" | "opponent") {
     switch (player) {
       case "player":
-        if (touchedLastBy === "player") {
+        if (touchedLastBy === "player" && canScore) {
           increaseOpponentScore(1);
-          handleResetBall("opponent");
+          setCanScore(false);
+          setTimeout(() => {
+            handleResetBall("opponent");
+          }, 1000);
         }
         setTouchedLastTable("player");
         break;
 
       case "opponent":
-        if (touchedLastBy === "opponent") {
+        if (touchedLastBy === "opponent" && canScore) {
           increasePlayerScore(1);
-          handleResetBall("player");
+          setCanScore(false);
+          setTimeout(() => {
+            handleResetBall("player");
+          }, 1000);
         }
         setTouchedLastTable("opponent");
         break;

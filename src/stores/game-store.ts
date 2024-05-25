@@ -3,14 +3,14 @@ import { create } from "zustand";
 type Players = "player" | "opponent";
 
 interface GameState {
-  touchedLastBy: Players;
-  setTouchedLastBy: (by: Players) => void;
+  touchedLastBy: Players | undefined;
+  setTouchedLastBy: (by: Players | undefined) => void;
   touchedLastTable: Players;
   setTouchedLastTable: (table: Players) => void;
 }
 
 export const useGameStore = create<GameState>()((set) => ({
-  touchedLastBy: "player",
+  touchedLastBy: undefined,
   setTouchedLastBy: (player) => set({ touchedLastBy: player }),
   touchedLastTable: "player",
   setTouchedLastTable: (table) => set({ touchedLastTable: table }),
@@ -21,6 +21,8 @@ interface ScoreState {
   playerScore: number;
   increaseOpponentScore: (score: number) => void;
   increasePlayerScore: (score: number) => void;
+  canScore: boolean;
+  setCanScore: (canScore: boolean) => void;
 }
 
 export const useScoreStore = create<ScoreState>()((set) => ({
@@ -30,4 +32,6 @@ export const useScoreStore = create<ScoreState>()((set) => ({
     set((state) => ({ opponentScore: state.opponentScore + score })),
   increasePlayerScore: (score) =>
     set((state) => ({ playerScore: state.playerScore + score })),
+  canScore: true,
+  setCanScore: (canScore) => set({ canScore }),
 }));
