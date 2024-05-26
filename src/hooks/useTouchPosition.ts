@@ -25,10 +25,12 @@ export default function useTouchPosition() {
     };
 
     window.addEventListener("mousemove", updatePosition);
+    window.addEventListener("touchstart", updatePosition);
     window.addEventListener("touchmove", updatePosition);
 
     return () => {
       window.removeEventListener("mousemove", updatePosition);
+      window.removeEventListener("touchstart", updatePosition);
       window.removeEventListener("touchmove", updatePosition);
     };
   }, []);

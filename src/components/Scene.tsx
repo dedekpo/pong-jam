@@ -1,6 +1,6 @@
 import { Canvas } from "@react-three/fiber";
 import { Suspense } from "react";
-import { CameraControls } from "@react-three/drei";
+// import { CameraControls } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
 import Ball from "../components/Ball";
 import Table from "../components/Table";
@@ -30,7 +30,7 @@ export default function Scene() {
           <BallOutSensor />
         </Physics>
       </Suspense>
-      <CameraControls />
+      {/* <CameraControls /> */}
     </Canvas>
   );
 }
