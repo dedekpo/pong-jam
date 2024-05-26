@@ -36,6 +36,8 @@ export default function useRacket() {
       z: 15 * playeModifier,
     });
 
+    const scalarMultiplier = precision === 0 ? 17 : precision === 0.5 ? 16 : 15;
+
     //Get direction from ball position to target position
     const direction = vec3({
       x: targetPosition.x - ballWorldPosition.x,
@@ -43,7 +45,7 @@ export default function useRacket() {
       z: targetPosition.z - ballWorldPosition.z,
     })
       .normalize()
-      .multiplyScalar(15);
+      .multiplyScalar(scalarMultiplier);
 
     const variationBasedOnPrecision = (Math.random() - 0.5) * precision;
 

@@ -5,8 +5,8 @@ type Players = "player" | "opponent";
 interface GameState {
   touchedLastBy: Players | undefined;
   setTouchedLastBy: (by: Players | undefined) => void;
-  touchedLastTable: Players;
-  setTouchedLastTable: (table: Players) => void;
+  touchedLastTable: Players | undefined;
+  setTouchedLastTable: (table: Players | undefined) => void;
 }
 
 export const useGameStore = create<GameState>()((set) => ({

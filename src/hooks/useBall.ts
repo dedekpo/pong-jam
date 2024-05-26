@@ -3,7 +3,9 @@ import { useGameStore, useScoreStore } from "../stores/game-store";
 
 export default function useBall() {
   const { ballApi } = useRefs();
-  const { touchedLastBy, setTouchedLastBy } = useGameStore((state) => state);
+  const { touchedLastBy, setTouchedLastBy, setTouchedLastTable } = useGameStore(
+    (state) => state
+  );
   const { setCanScore } = useScoreStore((state) => state);
 
   function handleResetBall(player?: "player" | "opponent") {
@@ -11,6 +13,7 @@ export default function useBall() {
     const playerModifier = currentPlayer === "player" ? 1 : -1;
 
     setTouchedLastBy(undefined);
+    setTouchedLastTable(undefined);
     setCanScore(true);
 
     ballApi?.current?.setLinvel({ x: 0, y: 0, z: 0 }, true);
