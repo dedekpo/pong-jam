@@ -9,17 +9,32 @@ export default function Opponent() {
 
   useFrame(() => {
     if (opponentApi?.current) {
+      const currentOpponentPosition = vec3(opponentApi?.current?.translation());
       const ballPosition = vec3(ballApi?.current?.translation());
+      const targetPosition = {
+        x: ballPosition.x,
+        y: Math.max(1, Math.min(3, ballPosition.y)), // Clamped within 1 and 3
+        z: -30, // Presumably a fixed position on the z-axis
+      };
 
-      opponentApi?.current.setTranslation(
-        {
-          x: ballPosition.x,
-          // Set max and min to prevent opponent from going out of the table
-          y: Math.max(1, Math.min(3, ballPosition.y)),
-          z: -30,
-        },
-        true
-      );
+      // Determine the interpolation speed factor
+      const lerpFactor = 0.2; // Adjust this value based on desired responsiveness
+
+      // Calculate the interpolated position
+      const interpolatedPosition = {
+        x:
+          currentOpponentPosition.x +
+          lerpFactor * (targetPosition.x - currentOpponentPosition.x),
+        y:
+          currentOpponentPosition.y +
+          lerpFactor * (targetPosition.y - currentOpponentPosition.y),
+        z:
+          currentOpponentPosition.z +
+          lerpFactor * (targetPosition.z - currentOpponentPosition.z),
+      };
+
+      // Set the new interpolated position
+      opponentApi?.current.setTranslation(interpolatedPosition, true);
     }
   });
 

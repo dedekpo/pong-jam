@@ -6,6 +6,8 @@ import {
 } from "@react-three/rapier";
 import { Suspense, forwardRef } from "react";
 import useRacket from "../hooks/useRacket";
+import { useGameStore } from "../stores/game-store";
+import { useFrame } from "@react-three/fiber";
 
 interface RacketProps extends RigidBodyProps {
   children?: React.ReactNode;
@@ -14,10 +16,24 @@ interface RacketProps extends RigidBodyProps {
 const Racket = forwardRef<RapierRigidBody, RacketProps>(
   ({ children, ...props }, ref) => {
     const { racketHitBall } = useRacket();
+    const { touchedLastBy } = useGameStore((state) => state);
+
+    // Ensure ref is treated as a RefObject<RapierRigidBody> by TypeScript
+    const rigidBodyRef = ref as React.MutableRefObject<RapierRigidBody | null>;
+
+    useFrame(() => {
+      if (!touchedLastBy && rigidBodyRef.current) {
+        const playerModifier = props.name === "player-racket" ? 1 : -1;
+        rigidBodyRef.current.setTranslation(
+          { x: 0, y: 4, z: 30 * playerModifier },
+          true
+        );
+      }
+    });
 
     return (
       <RigidBody
-        ref={ref}
+        ref={rigidBodyRef}
         ccd
         canSleep={false}
         colliders={false}

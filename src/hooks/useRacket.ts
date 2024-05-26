@@ -7,9 +7,9 @@ export default function useRacket() {
   const setTouchedLastBy = useGameStore((state) => state.setTouchedLastBy);
 
   function getHitPrecision(distance: number) {
-    if (distance < 1.3) return 1;
+    if (distance < 1.3) return 0;
     if (distance < 2) return 0.5;
-    return 0;
+    return 1;
   }
 
   function racketHitBall(e: CollisionPayload) {
@@ -17,6 +17,7 @@ export default function useRacket() {
     setTouchedLastBy(isPlayer ? "player" : "opponent");
 
     const playeModifier = isPlayer ? -1 : 1;
+    const randomModifier = Math.random() - 0.5 > 0 ? 1 : -1;
 
     const racketWorldPosition = isPlayer
       ? vec3(racketApi?.current?.translation())
@@ -27,16 +28,36 @@ export default function useRacket() {
     const racketBallDistance =
       racketWorldPosition?.distanceTo(ballWorldPosition);
 
-    const variationBasedOnPrecision =
-      (Math.random() - 0.5) * getHitPrecision(racketBallDistance);
+    const precision = getHitPrecision(racketBallDistance);
+
+    const targetPosition = vec3({
+      x: precision === 0 ? -10 * randomModifier : 0,
+      y: 12,
+      z: 15 * playeModifier,
+    });
+
+    //Get direction from ball position to target position
+    const direction = vec3({
+      x: targetPosition.x - ballWorldPosition.x,
+      y: targetPosition.y - ballWorldPosition.y,
+      z: targetPosition.z - ballWorldPosition.z,
+    })
+      .normalize()
+      .multiplyScalar(15);
+
+    const variationBasedOnPrecision = (Math.random() - 0.5) * precision;
 
     const xVariation = variationBasedOnPrecision * 10;
-    const yVariation = variationBasedOnPrecision * 1.5 + 3;
+    const yVariation = variationBasedOnPrecision * 1.5;
 
     ballApi?.current?.setLinvel({ x: 0, y: 0, z: 0 }, true);
     ballApi?.current?.setAngvel({ x: 0, y: 0, z: 0 }, true);
     ballApi?.current?.applyImpulse(
-      { x: xVariation, y: yVariation, z: 15 * playeModifier },
+      {
+        x: direction.x + xVariation,
+        y: direction.y + yVariation,
+        z: direction.z,
+      },
       true
     );
   }

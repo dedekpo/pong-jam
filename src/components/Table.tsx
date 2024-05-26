@@ -10,6 +10,7 @@ export default function Table() {
   const { handleResetBall } = useBall();
 
   function handleTableCollision(player: "player" | "opponent") {
+    console.log("table collision", { player, canScore, touchedLastBy });
     switch (player) {
       case "player":
         if (touchedLastBy === "player" && canScore) {

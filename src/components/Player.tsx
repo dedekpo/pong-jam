@@ -1,26 +1,42 @@
 import { useFrame } from "@react-three/fiber";
-import useMousePosition from "../hooks/useMousePosition";
 import { useRefs } from "../contexts/RefsContext";
 import { TABLE_WIDTH } from "../config";
 import PingPong from "../models/RacketMesh";
 import Racket from "./Racket";
 import { vec3 } from "@react-three/rapier";
+import useTouchPosition from "../hooks/useTouchPosition";
 
 export default function Player() {
   const { racketApi, racketMesh, ballApi } = useRefs();
-  const mousePosition = useMousePosition();
+  const mousePosition = useTouchPosition();
 
   useFrame(() => {
     if (racketApi?.current) {
       const currentPosition = racketApi?.current.translation();
-      racketApi?.current.setTranslation(
-        {
-          x: mousePosition.xPercent * 0.5 - TABLE_WIDTH / 2 - 5,
-          y: mousePosition.yPercent * -0.1 + 10,
-          z: currentPosition.z,
-        },
-        true
-      );
+      const targetPosition = {
+        x: mousePosition.xPercent * 0.5 - TABLE_WIDTH / 2 - 5,
+        y: mousePosition.yPercent * -0.1 + 10,
+        z: currentPosition.z, // assuming z remains constant
+      };
+
+      // Determine the interpolation speed factor
+      const lerpFactor = 0.1; // Adjust this value to change the smoothness
+
+      // Calculate the interpolated position
+      const interpolatedPosition = {
+        x:
+          currentPosition.x +
+          lerpFactor * (targetPosition.x - currentPosition.x),
+        y:
+          currentPosition.y +
+          lerpFactor * (targetPosition.y - currentPosition.y),
+        z:
+          currentPosition.z +
+          lerpFactor * (targetPosition.z - currentPosition.z),
+      };
+
+      // Set the new interpolated position
+      racketApi?.current.setTranslation(interpolatedPosition, true);
     }
 
     if (racketMesh?.current && ballApi?.current && racketApi?.current) {

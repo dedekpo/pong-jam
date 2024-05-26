@@ -1,9 +1,11 @@
 import { RigidBody } from "@react-three/rapier";
 import { useRefs } from "../contexts/RefsContext";
 import { Trail } from "@react-three/drei";
+import { useGameStore } from "../stores/game-store";
 
 export default function Ball() {
   const { ballApi } = useRefs();
+  const { touchedLastBy } = useGameStore((state) => state);
 
   return (
     <RigidBody
@@ -17,7 +19,7 @@ export default function Ball() {
       mass={0.1}
     >
       <Trail
-        width={10} // Width of the line
+        width={touchedLastBy ? 10 : 0} // Width of the line
         color={"white"} // Color of the line
         length={2} // Length of the line
         decay={1} // How fast the line fades away

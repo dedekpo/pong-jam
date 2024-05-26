@@ -18,11 +18,11 @@ export default function Blocker() {
   return (
     <RigidBody
       onCollisionExit={ballHitBlocker}
-      type="kinematicPosition"
+      type="fixed"
       canSleep={false}
       friction={0.9}
     >
-      <mesh position={[0, 0, 0]} receiveShadow>
+      <mesh position={[0, -0.3, 0]} receiveShadow>
         <boxGeometry args={[40, 2.4, 0.2]} />
         <meshStandardMaterial color="red" />
       </mesh>

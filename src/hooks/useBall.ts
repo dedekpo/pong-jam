@@ -7,8 +7,7 @@ export default function useBall() {
   const { setCanScore } = useScoreStore((state) => state);
 
   function handleResetBall(player?: "player" | "opponent") {
-    const playerToReset = touchedLastBy === "player" ? "opponent" : "player";
-    const currentPlayer = player || playerToReset;
+    const currentPlayer = player || touchedLastBy;
     const playerModifier = currentPlayer === "player" ? 1 : -1;
 
     setTouchedLastBy(undefined);
