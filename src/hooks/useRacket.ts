@@ -23,8 +23,8 @@ export default function useRacket() {
         precision: "PERFECT",
         modifier: 0,
         x: -11 * randomModifier,
-        y: 10.5,
-        scalarMultiplier: 18,
+        y: 11,
+        scalarMultiplier: 17,
       };
     if (distance < 2)
       return {
@@ -39,7 +39,7 @@ export default function useRacket() {
         precision: "OK",
         modifier: 0.5,
         x: -5 * randomModifier,
-        y: 11.5,
+        y: 12,
         scalarMultiplier: 15,
       };
     return { precision: "BAD", modifier: 1, x: 0, y: 12, scalarMultiplier: 14 };
