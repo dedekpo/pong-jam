@@ -4,6 +4,7 @@ import Scene from "./components/Scene";
 import { useEffect } from "react";
 import { sunset } from "./audios";
 import StartGame from "./ui/start-game";
+import FullScreen from "./ui/full-screen";
 export default function App() {
   useEffect(() => {
     // check if user interacted with the page
@@ -26,6 +27,7 @@ export default function App() {
       <RefsProvider>
         <Scene />
         <StartGame />
+        <FullScreen />
       </RefsProvider>
     </div>
   );
