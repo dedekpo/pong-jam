@@ -1,49 +1,28 @@
 import { RigidBody } from "@react-three/rapier";
 import { TABLE_WIDTH } from "../config";
-import { useGameStore, useScoreStore } from "../stores/game-store";
-import useBall from "../hooks/useBall";
+import { useGameStore } from "../stores/game-store";
+import { table } from "../audios";
+import useGameController from "../hooks/useGameController";
 
 export default function Table() {
   const { touchedLastBy, touchedLastTable, setTouchedLastTable } = useGameStore(
     (state) => state
   );
-  const { increaseOpponentScore, increasePlayerScore, canScore, setCanScore } =
-    useScoreStore((state) => state);
-  const { handleResetBall } = useBall();
 
-  function handlePlayerScore() {
-    increasePlayerScore(1);
-    setCanScore(false);
-    setTimeout(() => {
-      handleResetBall("player");
-    }, 1000);
-  }
-
-  function handleOpponentScore() {
-    increaseOpponentScore(1);
-    setCanScore(false);
-    setTimeout(() => {
-      handleResetBall("opponent");
-    }, 1000);
-  }
+  const { handlePlayerScore, handleOpponentScore } = useGameController();
 
   function handleTableCollision(player: "player" | "opponent") {
+    table.play();
     switch (player) {
       case "player":
-        if (
-          (touchedLastBy === "player" || touchedLastTable === "player") &&
-          canScore
-        ) {
+        if (touchedLastBy === "player" || touchedLastTable === "player") {
           handleOpponentScore();
         }
         setTouchedLastTable("player");
         break;
 
       case "opponent":
-        if (
-          (touchedLastBy === "opponent" || touchedLastTable === "opponent") &&
-          canScore
-        ) {
+        if (touchedLastBy === "opponent" || touchedLastTable === "opponent") {
           handlePlayerScore();
         }
         setTouchedLastTable("opponent");

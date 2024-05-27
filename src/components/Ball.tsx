@@ -31,7 +31,7 @@ export default function Ball() {
       >
         <mesh scale={[0.4, 0.4, 0.4]} position={[0, 0, 0]} castShadow>
           <sphereGeometry />
-          <meshStandardMaterial />
+          <meshStandardMaterial color="#edce02" />
         </mesh>
       </Trail>
     </RigidBody>

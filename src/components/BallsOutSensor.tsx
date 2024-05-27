@@ -1,32 +1,27 @@
 import { CuboidCollider } from "@react-three/rapier";
-import useBall from "../hooks/useBall";
-import { useGameStore, useScoreStore } from "../stores/game-store";
+import { useGameStore } from "../stores/game-store";
+import useGameController from "../hooks/useGameController";
 
 export function BallOutSensor() {
-  const { handleResetBall } = useBall();
-
   const { touchedLastBy, touchedLastTable } = useGameStore((state) => state);
-  const { increaseOpponentScore, increasePlayerScore } = useScoreStore(
-    (state) => state
-  );
-  function handleBallOut() {
-    handleResetBall();
+  const { handlePlayerScore, handleOpponentScore } = useGameController();
 
+  function handleBallOut() {
     if (touchedLastBy === "player") {
       if (touchedLastTable === "opponent") {
-        increasePlayerScore(1);
+        handlePlayerScore();
         return;
       }
-      increaseOpponentScore(1);
+      handleOpponentScore();
       return;
     }
 
     if (touchedLastTable === "player") {
-      increaseOpponentScore(1);
+      handleOpponentScore();
 
       return;
     }
-    increasePlayerScore(1);
+    handlePlayerScore();
   }
 
   return (

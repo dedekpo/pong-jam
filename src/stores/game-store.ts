@@ -2,6 +2,16 @@ import { create } from "zustand";
 
 type Players = "player" | "opponent";
 
+interface GameControllerState {
+  isGameStarted: boolean;
+  setIsGameStarted: (isGameStarted: boolean) => void;
+}
+
+export const useGameControllerStore = create<GameControllerState>()((set) => ({
+  isGameStarted: false,
+  setIsGameStarted: (isGameStarted) => set({ isGameStarted }),
+}));
+
 interface GameState {
   touchedLastBy: Players | undefined;
   setTouchedLastBy: (by: Players | undefined) => void;
@@ -23,6 +33,7 @@ interface ScoreState {
   increasePlayerScore: (score: number) => void;
   canScore: boolean;
   setCanScore: (canScore: boolean) => void;
+  resetScores: () => void;
 }
 
 export const useScoreStore = create<ScoreState>()((set) => ({
@@ -34,4 +45,5 @@ export const useScoreStore = create<ScoreState>()((set) => ({
     set((state) => ({ playerScore: state.playerScore + score })),
   canScore: true,
   setCanScore: (canScore) => set({ canScore }),
+  resetScores: () => set({ playerScore: 0, opponentScore: 0 }),
 }));

@@ -1,6 +1,6 @@
 import { Canvas } from "@react-three/fiber";
 import { Suspense } from "react";
-// import { CameraControls } from "@react-three/drei";
+import { CameraControls } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
 import Ball from "../components/Ball";
 import Table from "../components/Table";
@@ -9,8 +9,11 @@ import Opponent from "../components/Opponent";
 import Player from "../components/Player";
 import Lights from "./Lights";
 import { BallOutSensor } from "./BallsOutSensor";
+import Score from "./Score";
+import { useGameControllerStore } from "../stores/game-store";
 
 export default function Scene() {
+  const { isGameStarted } = useGameControllerStore();
   return (
     <Canvas
       frameloop="always"
@@ -20,8 +23,9 @@ export default function Scene() {
       <color attach="background" args={["#171720"]} />
       <fog attach="fog" args={["#171720", 100, 200]} />
       <Lights />
+      <Score />
       <Suspense>
-        <Physics gravity={[0, -40, 0]}>
+        <Physics gravity={[0, -40, 0]} paused={!isGameStarted}>
           <Table />
           <Blocker />
           <Player />
@@ -30,7 +34,7 @@ export default function Scene() {
           <BallOutSensor />
         </Physics>
       </Suspense>
-      {/* <CameraControls /> */}
+      <CameraControls />
     </Canvas>
   );
 }

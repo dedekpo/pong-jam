@@ -1,6 +1,7 @@
 import { CollisionPayload, vec3 } from "@react-three/rapier";
 import { useRefs } from "../contexts/RefsContext";
 import { useGameStore } from "../stores/game-store";
+import { pingAudio, pongAudio } from "../audios";
 
 export default function useRacket() {
   const { ballApi, racketApi, opponentApi } = useRefs();
@@ -15,6 +16,12 @@ export default function useRacket() {
   function racketHitBall(e: CollisionPayload) {
     const isPlayer = e.target.colliderObject?.name === "player-racket";
     setTouchedLastBy(isPlayer ? "player" : "opponent");
+
+    if (isPlayer) {
+      pingAudio.play();
+    } else {
+      pongAudio.play();
+    }
 
     const playeModifier = isPlayer ? -1 : 1;
     const randomModifier = Math.random() - 0.5 > 0 ? 1 : -1;
@@ -36,7 +43,7 @@ export default function useRacket() {
       z: 15 * playeModifier,
     });
 
-    const scalarMultiplier = precision === 0 ? 17 : precision === 0.5 ? 16 : 15;
+    const scalarMultiplier = precision === 0 ? 17 : 16;
 
     //Get direction from ball position to target position
     const direction = vec3({
