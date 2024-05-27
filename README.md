@@ -1,30 +1,44 @@
-# React + TypeScript + Vite
+# Ping Pong Game
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Welcome to Pong Jam a Ping Pong game made with React.js + React Three Fiber!
 
-Currently, two official plugins are available:
+## About
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This game was made for participating in the React Jam 2024. It's a simple physics based game where you need to outscore your opponent scoring 5 points to win!
 
-## Expanding the ESLint configuration
+## Installation
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+1. Clone the repository: `sh git clone https://github.com/dedekpo/pong-jam.git`
 
-- Configure the top-level `parserOptions` property like this:
+2. Navigate to the project directory: `cd pong-jam`
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
+3. Install the dependencies: `npm install`
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+4. Start the development server: `npm run dev`
+
+## Usage
+
+Open your browser and navigate to `http://localhost:5173` to start playing the game.
+
+## Contributing
+
+Feel free to fork this repository and contribute by submitting pull requests. Any improvements or suggestions are welcome!
+
+## Author
+
+This game was created by André (dedekpo).
+
+Follow me on Twitter: [@andre_elias98](https://x.com/andre_elias98)
+
+## Acknowledgements
+
+- [React Three Fiber](https://github.com/pmndrs/react-three-fiber) and [Three.js](https://threejs.org) for providing the 3D rendering framework.
+- Any other libraries or resources used in the project.
+
+## Feedback
+
+If you have any feedback, please reach out to me via [Twitter](https://x.com/andre_elias98) or open an issue in the repository.
+
+## License
+
+This project is licensed under the Pong Jam License. See the [LICENSE](LICENSE) file for details.
