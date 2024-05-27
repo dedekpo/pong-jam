@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function FullScreen() {
   const [isFullScreen, setIsFullScreen] = useState(false);
@@ -8,12 +8,12 @@ export default function FullScreen() {
     setIsFullScreen(true);
     if (elem.requestFullscreen) {
       elem.requestFullscreen();
-    } else if (elem.webkitRequestFullscreen) {
+    } else if ((elem as any).webkitRequestFullscreen) {
       /* Safari */
-      elem.webkitRequestFullscreen();
-    } else if (elem.msRequestFullscreen) {
+      (elem as any).webkitRequestFullscreen();
+    } else if ((elem as any).msRequestFullscreen) {
       /* IE11 */
-      elem.msRequestFullscreen();
+      (elem as any).msRequestFullscreen();
     }
   }
 
@@ -21,12 +21,12 @@ export default function FullScreen() {
     setIsFullScreen(false);
     if (document.exitFullscreen) {
       document.exitFullscreen();
-    } else if (document.webkitExitFullscreen) {
+    } else if ((document as any).webkitExitFullscreen) {
       /* Safari */
-      document.webkitExitFullscreen();
-    } else if (document.msExitFullscreen) {
+      (document as any).webkitExitFullscreen();
+    } else if ((document as any).msExitFullscreen) {
       /* IE11 */
-      document.msExitFullscreen();
+      (document as any).msExitFullscreen();
     }
   }
 
