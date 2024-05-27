@@ -1,4 +1,4 @@
-# Ping Pong Game
+# Pong Jam
 
 Welcome to Pong Jam a Ping Pong game made with React.js + React Three Fiber!
 
