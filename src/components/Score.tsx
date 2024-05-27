@@ -12,6 +12,8 @@ export default function Score() {
         rotation={[0, Math.PI / 2, 0]}
         scale={20}
         fontWeight="bold"
+        outlineWidth={0.015}
+        outlineColor={"black"}
       >
         {playerScore}
       </Text>
@@ -21,6 +23,8 @@ export default function Score() {
         rotation={[0, Math.PI / 2, 0]}
         scale={20}
         fontWeight="bold"
+        outlineWidth={0.015}
+        outlineColor={"black"}
       >
         {opponentScore}
       </Text>

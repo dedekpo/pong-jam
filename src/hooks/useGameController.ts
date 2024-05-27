@@ -33,41 +33,31 @@ export default function useGameController() {
 
   function handleScore(player: "player" | "opponent") {
     if (!canScore) return;
-
     if (player === "player") {
-      if (playerScore === 4) {
+      increasePlayerScore(1);
+      if (playerScore >= 4) {
         handleEndGame();
       }
     }
 
     if (player === "opponent") {
-      if (opponentScore === 4) {
+      increaseOpponentScore(1);
+      if (opponentScore >= 4) {
         handleEndGame();
       }
     }
 
+    score.play();
     setCanScore(false);
+
     setTimeout(() => {
       handleResetBall(player);
     }, 1000);
   }
 
-  function handlePlayerScore() {
-    handleScore("player");
-    increasePlayerScore(1);
-    score.play();
-  }
-
-  function handleOpponentScore() {
-    handleScore("opponent");
-    increaseOpponentScore(1);
-    score.play();
-  }
-
   return {
     handleStartGame,
     handleEndGame,
-    handlePlayerScore,
-    handleOpponentScore,
+    handleScore,
   };
 }

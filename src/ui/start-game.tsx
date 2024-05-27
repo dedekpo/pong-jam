@@ -8,11 +8,12 @@ export default function StartGame() {
   return (
     <>
       {!isGameStarted && (
-        <div className="absolute top-0 right-0 flex flex-col justify-center items-center w-screen h-screen bg-transparent">
-          <h1 className="text-[4vh] font-bold">Pong Jam</h1>
+        <div className="absolute top-0 right-0 flex items-center justify-center h-screen w-screen">
           <button
             onClick={handleStartGame}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-5"
+            className="mx-auto bg-red-600 w-[20vw] h-[5vw] text-[2vw] rounded-full hover:bg-red-700 active:bg-red-500 shadow-2xl
+              border-4 border-black text-white font-bold uppercase
+            "
           >
             Start Game
           </button>

@@ -47,7 +47,7 @@ const RacketMesh = forwardRef<THREE.Group, RacketMeshProps>(
     const { nodes } = useGraph(clone) as any;
 
     return (
-      <group ref={ref} {...props} dispose={null} castShadow>
+      <group ref={ref} {...props} dispose={null}>
         <group rotation={[1.877, -0.345, 2.323]} scale={2.968}>
           <skinnedMesh
             geometry={nodes.arm.geometry}
@@ -64,27 +64,10 @@ const RacketMesh = forwardRef<THREE.Group, RacketMeshProps>(
           rotation={[0, -0.038, 0]}
           scale={141.943}
         >
+          <mesh geometry={nodes.mesh.geometry} material={materials.wood} />
+          <mesh geometry={nodes.mesh_1.geometry} material={materials.side} />
+          <mesh geometry={nodes.mesh_2.geometry} material={materials.foam} />
           <mesh
-            castShadow
-            receiveShadow
-            geometry={nodes.mesh.geometry}
-            material={materials.wood}
-          />
-          <mesh
-            castShadow
-            receiveShadow
-            geometry={nodes.mesh_1.geometry}
-            material={materials.side}
-          />
-          <mesh
-            castShadow
-            receiveShadow
-            geometry={nodes.mesh_2.geometry}
-            material={materials.foam}
-          />
-          <mesh
-            castShadow
-            receiveShadow
             geometry={nodes.mesh_3.geometry}
             material={
               new THREE.MeshStandardMaterial({
@@ -95,8 +78,6 @@ const RacketMesh = forwardRef<THREE.Group, RacketMeshProps>(
             }
           />
           <mesh
-            castShadow
-            receiveShadow
             geometry={nodes.mesh_4.geometry}
             material={
               new THREE.MeshStandardMaterial({

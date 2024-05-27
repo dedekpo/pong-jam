@@ -3,14 +3,46 @@ import { useRefs } from "../contexts/RefsContext";
 import { useGameStore } from "../stores/game-store";
 import { pingAudio, pongAudio } from "../audios";
 
+type PrecisionType = "PERFECT" | "GOOD" | "OK" | "BAD";
+
 export default function useRacket() {
   const { ballApi, racketApi, opponentApi } = useRefs();
   const setTouchedLastBy = useGameStore((state) => state.setTouchedLastBy);
 
-  function getHitPrecision(distance: number) {
-    if (distance < 1.3) return 0;
-    if (distance < 2) return 0.5;
-    return 1;
+  function getHitPrecision(distance: number): {
+    precision: PrecisionType;
+    modifier: number;
+    x: number;
+    y: number;
+    scalarMultiplier: number;
+  } {
+    const randomModifier = Math.random() - 0.5 > 0 ? 1 : -1;
+
+    if (distance < 1.3)
+      return {
+        precision: "PERFECT",
+        modifier: 0,
+        x: -11 * randomModifier,
+        y: 10.5,
+        scalarMultiplier: 18,
+      };
+    if (distance < 2)
+      return {
+        precision: "GOOD",
+        modifier: 0.3,
+        x: -10 * randomModifier,
+        y: 11,
+        scalarMultiplier: 16,
+      };
+    if (distance < 3)
+      return {
+        precision: "OK",
+        modifier: 0.5,
+        x: -5 * randomModifier,
+        y: 11.5,
+        scalarMultiplier: 15,
+      };
+    return { precision: "BAD", modifier: 1, x: 0, y: 12, scalarMultiplier: 14 };
   }
 
   function racketHitBall(e: CollisionPayload) {
@@ -24,7 +56,6 @@ export default function useRacket() {
     }
 
     const playeModifier = isPlayer ? -1 : 1;
-    const randomModifier = Math.random() - 0.5 > 0 ? 1 : -1;
 
     const racketWorldPosition = isPlayer
       ? vec3(racketApi?.current?.translation())
@@ -38,12 +69,10 @@ export default function useRacket() {
     const precision = getHitPrecision(racketBallDistance);
 
     const targetPosition = vec3({
-      x: precision === 0 ? -10 * randomModifier : 0,
-      y: 12,
+      x: precision.x,
+      y: precision.y,
       z: 15 * playeModifier,
     });
-
-    const scalarMultiplier = precision === 0 ? 17 : 16;
 
     //Get direction from ball position to target position
     const direction = vec3({
@@ -52,9 +81,10 @@ export default function useRacket() {
       z: targetPosition.z - ballWorldPosition.z,
     })
       .normalize()
-      .multiplyScalar(scalarMultiplier);
+      .multiplyScalar(precision.scalarMultiplier);
 
-    const variationBasedOnPrecision = (Math.random() - 0.5) * precision;
+    const variationBasedOnPrecision =
+      (Math.random() - 0.5) * precision.modifier;
 
     const xVariation = variationBasedOnPrecision * 10;
     const yVariation = variationBasedOnPrecision * 1.5;

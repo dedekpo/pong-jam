@@ -4,24 +4,24 @@ import useGameController from "../hooks/useGameController";
 
 export function BallOutSensor() {
   const { touchedLastBy, touchedLastTable } = useGameStore((state) => state);
-  const { handlePlayerScore, handleOpponentScore } = useGameController();
+  const { handleScore } = useGameController();
 
   function handleBallOut() {
     if (touchedLastBy === "player") {
       if (touchedLastTable === "opponent") {
-        handlePlayerScore();
+        handleScore("player");
         return;
       }
-      handleOpponentScore();
+      handleScore("opponent");
       return;
     }
 
     if (touchedLastTable === "player") {
-      handleOpponentScore();
+      handleScore("opponent");
 
       return;
     }
-    handlePlayerScore();
+    handleScore("player");
   }
 
   return (

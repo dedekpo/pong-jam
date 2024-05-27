@@ -24,7 +24,7 @@ export default function Blocker() {
     >
       <mesh position={[0, -0.3, 0]} receiveShadow>
         <boxGeometry args={[40, 2.4, 0.2]} />
-        <meshStandardMaterial color="red" />
+        <meshStandardMaterial color="red" metalness={0.8} />
       </mesh>
     </RigidBody>
   );

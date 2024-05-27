@@ -9,21 +9,21 @@ export default function Table() {
     (state) => state
   );
 
-  const { handlePlayerScore, handleOpponentScore } = useGameController();
+  const { handleScore } = useGameController();
 
   function handleTableCollision(player: "player" | "opponent") {
     table.play();
     switch (player) {
       case "player":
         if (touchedLastBy === "player" || touchedLastTable === "player") {
-          handleOpponentScore();
+          handleScore("opponent");
         }
         setTouchedLastTable("player");
         break;
 
       case "opponent":
         if (touchedLastBy === "opponent" || touchedLastTable === "opponent") {
-          handlePlayerScore();
+          handleScore("player");
         }
         setTouchedLastTable("opponent");
         break;
@@ -39,7 +39,7 @@ export default function Table() {
         friction={0.9}
         onCollisionExit={() => handleTableCollision("player")}
       >
-        <mesh position={[0, -2, 15]} receiveShadow castShadow>
+        <mesh position={[0, -2, 15]} receiveShadow>
           <boxGeometry args={[TABLE_WIDTH, 1, 30]} />
           <meshStandardMaterial color="gray" />
         </mesh>
@@ -51,7 +51,7 @@ export default function Table() {
         friction={0.9}
         onCollisionExit={() => handleTableCollision("opponent")}
       >
-        <mesh position={[0, -2, -15]} receiveShadow castShadow>
+        <mesh position={[0, -2, -15]} receiveShadow>
           <boxGeometry args={[TABLE_WIDTH, 1, 30]} />
           <meshStandardMaterial color="gray" />
         </mesh>

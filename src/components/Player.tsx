@@ -5,10 +5,13 @@ import PingPong from "../models/RacketMesh";
 import Racket from "./Racket";
 import { vec3 } from "@react-three/rapier";
 import useTouchPosition from "../hooks/useTouchPosition";
+import { useGameControllerStore } from "../stores/game-store";
+import { useMemo } from "react";
 
 export default function Player() {
   const { racketApi, racketMesh, ballApi } = useRefs();
   const mousePosition = useTouchPosition();
+  const { isGameStarted } = useGameControllerStore();
 
   useFrame(() => {
     if (racketApi?.current) {
@@ -56,6 +59,29 @@ export default function Player() {
       racketMesh.current.rotation.x = rotationX;
     }
   });
+
+  const originalPosition = useMemo(() => vec3(), []);
+  const restPosition = useMemo(
+    () =>
+      vec3({
+        x: 0,
+        y: -7,
+        z: -3,
+      }),
+    []
+  );
+
+  useFrame(() => {
+    if (!racketMesh?.current) return;
+    if (!isGameStarted) {
+      racketMesh.current.position.lerp(restPosition, 0.2);
+      // racketMesh.current.rotation.set(0, -Math.PI / 2.5, 0);
+    } else {
+      // Lerp position
+      racketMesh.current.position.lerp(originalPosition, 0.2); // 0.1 is the interpolation factor, adjust for speed
+    }
+  });
+
   return (
     <Racket name="player-racket" ref={racketApi} position={[0, 5, 30]}>
       <PingPong ref={racketMesh} scale={[0.2, 0.2, 0.2]} color="#d94c51" />
