@@ -42,7 +42,7 @@ export default function useRacket() {
         y: 12,
         scalarMultiplier: 15,
       };
-    return { precision: "BAD", modifier: 1, x: 0, y: 12, scalarMultiplier: 14 };
+    return { precision: "BAD", modifier: 1, x: 0, y: 13, scalarMultiplier: 14 };
   }
 
   function racketHitBall(e: CollisionPayload) {
