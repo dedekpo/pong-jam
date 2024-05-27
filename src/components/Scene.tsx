@@ -1,6 +1,6 @@
 import { Canvas } from "@react-three/fiber";
 import { Suspense, useEffect, useRef, useState } from "react";
-import { CameraControls } from "@react-three/drei";
+// import { CameraControls } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
 import Ball from "../components/Ball";
 import Table from "../components/Table";
@@ -39,7 +39,7 @@ export default function Scene() {
       shadows
       camera={
         isPortrait
-          ? { position: [0, 20, 60], fov: 110 }
+          ? { position: [0, 40, 100], fov: 70 }
           : { position: [0, 20, 55], fov: 50 }
       }
     >
@@ -58,7 +58,7 @@ export default function Scene() {
           <BallOutSensor />
         </Physics>
       </Suspense>
-      <CameraControls />
+      {/* <CameraControls /> */}
     </Canvas>
   );
 }
