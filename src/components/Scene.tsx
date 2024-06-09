@@ -1,6 +1,6 @@
 import { Canvas } from "@react-three/fiber";
-import { Suspense, useEffect, useRef, useState } from "react";
-// import { CameraControls } from "@react-three/drei";
+import { Suspense, useEffect, useState } from "react";
+import { CameraControls } from "@react-three/drei";
 import { Physics } from "@react-three/rapier";
 import Ball from "../components/Ball";
 import Table from "../components/Table";
@@ -19,7 +19,6 @@ export default function Scene() {
   const [isPortrait, setIsPortrait] = useState(
     window.innerHeight > window.innerWidth
   );
-  const canvasRef = useRef(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -34,7 +33,6 @@ export default function Scene() {
 
   return (
     <Canvas
-      ref={canvasRef}
       frameloop="always"
       shadows
       camera={
@@ -58,7 +56,7 @@ export default function Scene() {
           <BallOutSensor />
         </Physics>
       </Suspense>
-      {/* <CameraControls /> */}
+      <CameraControls />
     </Canvas>
   );
 }

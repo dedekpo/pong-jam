@@ -5,13 +5,14 @@ import PingPong from "../models/RacketMesh";
 import Racket from "./Racket";
 import { vec3 } from "@react-three/rapier";
 import useTouchPosition from "../hooks/useTouchPosition";
-import { useGameControllerStore } from "../stores/game-store";
+import { useGameControllerStore, usePaddleStore } from "../stores/game-store";
 import { useMemo } from "react";
 
 export default function Player() {
   const { racketApi, racketMesh, ballApi } = useRefs();
   const mousePosition = useTouchPosition();
   const { isGameStarted } = useGameControllerStore();
+  const { playerColor } = usePaddleStore((state) => state);
 
   useFrame(() => {
     if (racketApi?.current) {
@@ -84,7 +85,7 @@ export default function Player() {
 
   return (
     <Racket name="player-racket" ref={racketApi} position={[0, 5, 30]}>
-      <PingPong ref={racketMesh} scale={[0.2, 0.2, 0.2]} color="#d94c51" />
+      <PingPong ref={racketMesh} scale={[0.2, 0.2, 0.2]} color={playerColor} />
     </Racket>
   );
 }

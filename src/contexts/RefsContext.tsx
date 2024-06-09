@@ -8,6 +8,7 @@ interface BallContextProps {
   racketMesh: RefObject<THREE.Group> | null;
   opponentApi: RefObject<RapierRigidBody> | null;
   opponentMesh: RefObject<THREE.Group> | null;
+  playerIsHandlingBall: React.MutableRefObject<boolean>;
 }
 
 const RefsContext = createContext<BallContextProps>({
@@ -16,6 +17,7 @@ const RefsContext = createContext<BallContextProps>({
   racketMesh: null,
   opponentApi: null,
   opponentMesh: null,
+  playerIsHandlingBall: { current: false },
 });
 
 export const RefsProvider: React.FC<React.PropsWithChildren<{}>> = ({
@@ -26,8 +28,16 @@ export const RefsProvider: React.FC<React.PropsWithChildren<{}>> = ({
   const racketMesh = useRef<THREE.Group>(null);
   const opponentApi = useRef<RapierRigidBody>(null);
   const opponentMesh = useRef<THREE.Group>(null);
+  const playerIsHandlingBall = useRef<boolean>(false);
 
-  const value = { ballApi, racketApi, racketMesh, opponentApi, opponentMesh };
+  const value = {
+    ballApi,
+    racketApi,
+    racketMesh,
+    opponentApi,
+    opponentMesh,
+    playerIsHandlingBall,
+  };
 
   return <RefsContext.Provider value={value}>{children}</RefsContext.Provider>;
 };

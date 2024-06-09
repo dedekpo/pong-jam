@@ -3,30 +3,40 @@ import { TABLE_WIDTH } from "../config";
 import { useGameStore } from "../stores/game-store";
 import { table } from "../audios";
 import useGameController from "../hooks/useGameController";
+import { useRefs } from "../contexts/RefsContext";
+import { useOnlineStore } from "../stores/online-store";
 
 export default function Table() {
   const { touchedLastBy, touchedLastTable, setTouchedLastTable } = useGameStore(
     (state) => state
   );
+  const { room } = useOnlineStore((state) => state);
 
   const { handleScore } = useGameController();
+  const { playerIsHandlingBall } = useRefs();
 
   function handleTableCollision(player: "player" | "opponent") {
+    console.log("hit");
     table.play();
-    switch (player) {
-      case "player":
-        if (touchedLastBy === "player" || touchedLastTable === "player") {
-          handleScore("opponent");
-        }
-        setTouchedLastTable("player");
-        break;
+    if (player === "player") {
+      if (playerIsHandlingBall.current) {
+        room?.send("hit-my-table");
+      }
+      if (touchedLastBy === "player" || touchedLastTable === "player") {
+        handleScore("opponent");
+      }
+      setTouchedLastTable("player");
+      return;
+    }
 
-      case "opponent":
-        if (touchedLastBy === "opponent" || touchedLastTable === "opponent") {
-          handleScore("player");
-        }
-        setTouchedLastTable("opponent");
-        break;
+    if (player === "opponent") {
+      if (playerIsHandlingBall.current) {
+        room?.send("hit-opponent-table");
+      }
+      if (touchedLastBy === "opponent" || touchedLastTable === "opponent") {
+        handleScore("player");
+      }
+      setTouchedLastTable("opponent");
     }
   }
 

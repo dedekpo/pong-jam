@@ -47,3 +47,27 @@ export const useScoreStore = create<ScoreState>()((set) => ({
   setCanScore: (canScore) => set({ canScore }),
   resetScores: () => set({ playerScore: 0, opponentScore: 0 }),
 }));
+
+interface ConfettiState {
+  isConfettiActive: boolean;
+  setIsConfettiActive: (isConfettiActive: boolean) => void;
+}
+
+export const useConfettiStore = create<ConfettiState>()((set) => ({
+  isConfettiActive: false,
+  setIsConfettiActive: (isConfettiActive) => set({ isConfettiActive }),
+}));
+
+interface PaddleState {
+  playerColor: string;
+  opponentColor: string;
+  setPlayerColor: (color: string) => void;
+  setOpponentColor: (color: string) => void;
+}
+
+export const usePaddleStore = create<PaddleState>()((set) => ({
+  playerColor: "#d94c51",
+  opponentColor: "#4547bf",
+  setPlayerColor: (color) => set({ playerColor: color }),
+  setOpponentColor: (color) => set({ opponentColor: color }),
+}));

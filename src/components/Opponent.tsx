@@ -4,11 +4,16 @@ import Racket from "./Racket";
 import { useFrame } from "@react-three/fiber";
 import { vec3 } from "@react-three/rapier";
 import { clamp } from "three/src/math/MathUtils.js";
+import { useOnlineStore } from "../stores/online-store";
+import { usePaddleStore } from "../stores/game-store";
 
 export default function Opponent() {
   const { opponentApi, opponentMesh, ballApi } = useRefs();
+  const { room } = useOnlineStore((state) => state);
+  const { opponentColor } = usePaddleStore((state) => state);
 
   useFrame(() => {
+    if (room) return; // Is online mode
     if (opponentApi?.current) {
       const currentOpponentPosition = vec3(opponentApi?.current?.translation());
       const ballPosition = vec3(ballApi?.current?.translation());
@@ -52,7 +57,7 @@ export default function Opponent() {
         ref={opponentMesh}
         scale={[0.2, 0.2, 0.2]}
         rotation={[0, 0, Math.PI]}
-        color="#4547bf"
+        color={opponentColor}
       />
     </Racket>
   );

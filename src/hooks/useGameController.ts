@@ -1,9 +1,11 @@
 import { score } from "../audios";
 import {
+  useConfettiStore,
   useGameControllerStore,
   useGameStore,
   useScoreStore,
 } from "../stores/game-store";
+import { useOnlineStore } from "../stores/online-store";
 import useBall from "./useBall";
 
 export default function useGameController() {
@@ -19,8 +21,13 @@ export default function useGameController() {
     opponentScore,
   } = useScoreStore();
   const { handleResetBall } = useBall();
+  const { room } = useOnlineStore((state) => state);
+  const setIsConfettiActive = useConfettiStore(
+    (state) => state.setIsConfettiActive
+  );
 
   function handleStartGame() {
+    if (room) return;
     setIsGameStarted(true);
     setTouchedLastBy(undefined);
     setTouchedLastTable(undefined);
@@ -29,10 +36,13 @@ export default function useGameController() {
 
   function handleEndGame() {
     setIsGameStarted(false);
+    if (playerScore > opponentScore) {
+      setIsConfettiActive(true);
+    }
   }
 
   function handleScore(player: "player" | "opponent") {
-    if (!canScore) return;
+    if (!canScore || room?.roomId) return;
     if (player === "player") {
       increasePlayerScore(1);
       if (playerScore >= 4) {

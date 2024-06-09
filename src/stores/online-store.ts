@@ -1,0 +1,28 @@
+import { create } from "zustand";
+import { Client, Room } from "colyseus.js";
+
+interface OnlineState {
+  sessionId?: string;
+  setSessionId: (sessionId: string | undefined) => void;
+  hostId?: string;
+  setHostId: (hostId: string | undefined) => void;
+  client?: Client;
+  setClient: (client: Client | undefined) => void;
+  room?: Room;
+  setRoom: (room: Room | undefined) => void;
+  searchingMatch: boolean;
+  setSearchingMatch: (searchingMatch: boolean) => void;
+}
+
+export const useOnlineStore = create<OnlineState>()((set) => ({
+  sessionId: undefined,
+  setSessionId: (sessionId) => set({ sessionId }),
+  hostId: undefined,
+  setHostId: (hostId) => set({ hostId }),
+  client: undefined,
+  setClient: (client) => set({ client }),
+  room: undefined,
+  setRoom: (room) => set({ room }),
+  searchingMatch: false,
+  setSearchingMatch: (searchingMatch) => set({ searchingMatch }),
+}));

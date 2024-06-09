@@ -2,12 +2,14 @@ import { CollisionPayload, vec3 } from "@react-three/rapier";
 import { useRefs } from "../contexts/RefsContext";
 import { useGameStore } from "../stores/game-store";
 import { pingAudio, pongAudio } from "../audios";
+import { useOnlineStore } from "../stores/online-store";
 
 type PrecisionType = "PERFECT" | "GOOD" | "OK" | "BAD";
 
 export default function useRacket() {
-  const { ballApi, racketApi, opponentApi } = useRefs();
+  const { ballApi, racketApi, opponentApi, playerIsHandlingBall } = useRefs();
   const setTouchedLastBy = useGameStore((state) => state.setTouchedLastBy);
+  const { room } = useOnlineStore((state) => state);
 
   function getHitPrecision(distance: number): {
     precision: PrecisionType;
@@ -23,24 +25,24 @@ export default function useRacket() {
         precision: "PERFECT",
         modifier: 0,
         x: -11 * randomModifier,
-        y: 11,
-        scalarMultiplier: 17,
+        y: 10,
+        scalarMultiplier: 18,
       };
     if (distance < 2)
       return {
         precision: "GOOD",
         modifier: 0.3,
         x: -10 * randomModifier,
-        y: 11,
-        scalarMultiplier: 16,
+        y: 12,
+        scalarMultiplier: 17,
       };
     if (distance < 3)
       return {
         precision: "OK",
         modifier: 0.5,
         x: -5 * randomModifier,
-        y: 12,
-        scalarMultiplier: 15,
+        y: 13,
+        scalarMultiplier: 16,
       };
     return { precision: "BAD", modifier: 1, x: 0, y: 13, scalarMultiplier: 14 };
   }
@@ -48,6 +50,10 @@ export default function useRacket() {
   function racketHitBall(e: CollisionPayload) {
     const isPlayer = e.target.colliderObject?.name === "player-racket";
     setTouchedLastBy(isPlayer ? "player" : "opponent");
+
+    if (isPlayer && playerIsHandlingBall.current) {
+      room?.send("hit-ball");
+    }
 
     if (isPlayer) {
       pingAudio.play();
