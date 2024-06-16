@@ -17,7 +17,10 @@ export default function Blocker() {
 
   return (
     <RigidBody
-      onCollisionExit={ballHitBlocker}
+      onContactForce={({ totalForceMagnitude }) => {
+        if (totalForceMagnitude < 10) return;
+        ballHitBlocker();
+      }}
       type="fixed"
       canSleep={false}
       friction={0.9}

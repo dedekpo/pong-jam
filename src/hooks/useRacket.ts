@@ -1,4 +1,4 @@
-import { CollisionPayload, vec3 } from "@react-three/rapier";
+import { vec3 } from "@react-three/rapier";
 import { useRefs } from "../contexts/RefsContext";
 import { useGameStore } from "../stores/game-store";
 import { pingAudio, pongAudio } from "../audios";
@@ -47,8 +47,7 @@ export default function useRacket() {
     return { precision: "BAD", modifier: 1, x: 0, y: 13, scalarMultiplier: 14 };
   }
 
-  function racketHitBall(e: CollisionPayload) {
-    const isPlayer = e.target.colliderObject?.name === "player-racket";
+  function racketHitBall(isPlayer: boolean) {
     setTouchedLastBy(isPlayer ? "player" : "opponent");
 
     if (isPlayer && playerIsHandlingBall.current) {

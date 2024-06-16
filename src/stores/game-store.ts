@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 type Players = "player" | "opponent";
 
@@ -71,3 +72,37 @@ export const usePaddleStore = create<PaddleState>()((set) => ({
   setPlayerColor: (color) => set({ playerColor: color }),
   setOpponentColor: (color) => set({ opponentColor: color }),
 }));
+
+interface GamificationProps {
+  victories: number;
+  addVictory: () => void;
+}
+
+export const useGamificationStore = create<GamificationProps>()(
+  persist(
+    (set) => ({
+      victories: 0,
+      addVictory: () => set((state) => ({ victories: state.victories + 1 })),
+    }),
+    { name: "gamification" }
+  )
+);
+
+interface NameProps {
+  playerName: string;
+  setPlayerName: (newName: string) => void;
+  opponentName: string;
+  setOpponentName: (newName: string) => void;
+}
+
+export const useNamesStore = create<NameProps>()(
+  persist(
+    (set) => ({
+      playerName: "Player",
+      setPlayerName: (newName) => set(() => ({ playerName: newName })),
+      opponentName: "",
+      setOpponentName: (newName) => set(() => ({ opponentName: newName })),
+    }),
+    { name: "names" }
+  )
+);

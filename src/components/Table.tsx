@@ -16,7 +16,6 @@ export default function Table() {
   const { playerIsHandlingBall } = useRefs();
 
   function handleTableCollision(player: "player" | "opponent") {
-    console.log("hit");
     table.play();
     if (player === "player") {
       if (playerIsHandlingBall.current) {
@@ -47,7 +46,10 @@ export default function Table() {
         type="fixed"
         restitution={0.7}
         friction={0.9}
-        onCollisionExit={() => handleTableCollision("player")}
+        onContactForce={({ totalForceMagnitude }) => {
+          if (totalForceMagnitude < 10) return;
+          handleTableCollision("player");
+        }}
       >
         <mesh position={[0, -2, 15]} receiveShadow>
           <boxGeometry args={[TABLE_WIDTH, 1, 30]} />
@@ -59,7 +61,10 @@ export default function Table() {
         type="fixed"
         restitution={0.7}
         friction={0.9}
-        onCollisionExit={() => handleTableCollision("opponent")}
+        onContactForce={({ totalForceMagnitude }) => {
+          if (totalForceMagnitude < 10) return;
+          handleTableCollision("opponent");
+        }}
       >
         <mesh position={[0, -2, -15]} receiveShadow>
           <boxGeometry args={[TABLE_WIDTH, 1, 30]} />

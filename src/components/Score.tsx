@@ -1,8 +1,9 @@
 import { Text } from "@react-three/drei";
-import { useScoreStore } from "../stores/game-store";
+import { useNamesStore, useScoreStore } from "../stores/game-store";
 
 export default function Score() {
   const { playerScore, opponentScore } = useScoreStore((state) => state);
+  const { opponentName } = useNamesStore();
 
   return (
     <>
@@ -30,6 +31,20 @@ export default function Score() {
       >
         {opponentScore}
       </Text>
+      {opponentName && (
+        <Text
+          color="white"
+          position={[0, 10, -100]}
+          rotation={[0, 0, 0]}
+          scale={4}
+          fontWeight="bold"
+          outlineWidth={0.015}
+          outlineColor={"black"}
+          font="./sans-serif.woff"
+        >
+          {opponentName}
+        </Text>
+      )}
     </>
   );
 }

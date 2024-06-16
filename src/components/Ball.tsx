@@ -15,7 +15,7 @@ export default function Ball() {
       colliders={"ball"}
       type="dynamic"
       position={[0, 10, 30]}
-      restitution={0.9}
+      restitution={1}
       mass={0.1}
     >
       <Trail

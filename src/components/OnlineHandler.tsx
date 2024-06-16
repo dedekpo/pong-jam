@@ -1,8 +1,11 @@
 import { useEffect } from "react";
 import { useOnlineStore } from "../stores/online-store";
 import {
+  useConfettiStore,
   useGameControllerStore,
   useGameStore,
+  useNamesStore,
+  usePaddleStore,
   useScoreStore,
 } from "../stores/game-store";
 import { useRefs } from "../contexts/RefsContext";
@@ -35,7 +38,7 @@ type BallType = {
   };
 };
 
-const UPDATE_INTERVAL = 1000 / 60;
+const UPDATE_INTERVAL = 1000 / 30;
 
 export default function OnlineHandler() {
   const { room, sessionId, setSearchingMatch, setHostId } = useOnlineStore(
@@ -46,7 +49,11 @@ export default function OnlineHandler() {
     useScoreStore();
   const { opponentApi, racketApi, ballApi, playerIsHandlingBall } = useRefs();
   const { setTouchedLastBy } = useGameStore((state) => state);
-  // const { handleResetBall } = useBall();
+  const setIsConfettiActive = useConfettiStore(
+    (state) => state.setIsConfettiActive
+  );
+  const { setOpponentName } = useNamesStore((state) => state);
+  const { setOpponentColor } = usePaddleStore((state) => state);
 
   function handleUpdate() {
     const interval = setInterval(() => {
@@ -76,11 +83,17 @@ export default function OnlineHandler() {
 
     const interval = handleUpdate();
 
-    room.onMessage("found-match", ({ hostId }) => {
+    room.onMessage("found-match", ({ hostId, players }) => {
       setHostId(hostId);
       setSearchingMatch(false);
       resetScores();
       setTouchedLastBy(undefined);
+      for (const player of players) {
+        if (player.id !== sessionId) {
+          setOpponentName(player.playerName);
+          setOpponentColor(player.playerColor);
+        }
+      }
     });
 
     room.onMessage("match-started", () => {
@@ -100,21 +113,28 @@ export default function OnlineHandler() {
       setTouchedLastBy(undefined);
     });
 
-    room.onMessage("serve", ({ ball, playerId }) => {
+    room.onMessage("winner", (playerId) => {
+      setIsGameStarted(false);
+      if (room.sessionId === playerId) {
+        setIsConfettiActive(true);
+      }
+    });
+
+    room.onMessage("serve", ({ playerId }) => {
       const playerScored = room.sessionId === playerId;
-      ballApi?.current?.setTranslation(
+      ballApi?.current?.setLinvel(
         {
-          x: ball.ballTranslation.x,
-          y: ball.ballTranslation.y,
-          z: ball.ballTranslation.z * (playerScored ? 1 : -1),
+          x: 0,
+          y: 0,
+          z: 0,
         },
         true
       );
-      ballApi?.current?.setLinvel(
+      ballApi?.current?.setTranslation(
         {
-          x: ball.ballLinvel.x,
-          y: ball.ballLinvel.y,
-          z: ball.ballLinvel.z * (playerScored ? 1 : -1),
+          x: 0,
+          y: 10,
+          z: playerScored ? 30 : -30,
         },
         true
       );

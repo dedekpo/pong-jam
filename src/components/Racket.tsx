@@ -43,7 +43,12 @@ const Racket = forwardRef<RapierRigidBody, RacketProps>(
       >
         <CuboidCollider
           name={props.name}
-          onCollisionExit={racketHitBall}
+          onContactForce={({ totalForceMagnitude, target }) => {
+            if (totalForceMagnitude < 10) return;
+            const isPlayer = target.colliderObject?.name === "player-racket";
+
+            racketHitBall(isPlayer);
+          }}
           position={[0.05, 0, -0.2]}
           args={[2.2, 0.1, 2.2]}
         />
