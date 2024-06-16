@@ -10,7 +10,11 @@ export default function useOnline() {
   const { playerColor } = usePaddleStore((state) => state);
 
   async function joinRoom() {
-    const newClient = new Client("ws://localhost:2567");
+    // ws://pong-server-production-5438.up.railway.app
+    // ws://localhost:2567
+    const newClient = new Client(
+      "wss://pong-server-production-5438.up.railway.app"
+    );
     setClient(newClient);
 
     const room = await newClient.joinOrCreate("pong_room", {
@@ -25,7 +29,9 @@ export default function useOnline() {
   }
 
   async function createRoom() {
-    const newClient = new Client("ws://localhost:2567");
+    const newClient = new Client(
+      "wss://pong-server-production-5438.up.railway.app"
+    );
 
     setClient(newClient);
 
@@ -43,7 +49,9 @@ export default function useOnline() {
   }
 
   async function joinByRoomCode(code: string) {
-    const newClient = new Client("ws://localhost:2567");
+    const newClient = new Client(
+      "wss://pong-server-production-5438.up.railway.app"
+    );
     setClient(newClient);
 
     const foundRoom = await newClient.joinById(code, {
