@@ -6,6 +6,7 @@ import { vec3 } from "@react-three/rapier";
 import { clamp } from "three/src/math/MathUtils.js";
 import { useOnlineStore } from "../stores/online-store";
 import { usePaddleStore } from "../stores/game-store";
+import { useMemo } from "react";
 
 export default function Opponent() {
   const { opponentApi, opponentMesh, ballApi } = useRefs();
@@ -44,9 +45,11 @@ export default function Opponent() {
     }
   });
 
+  const auxVec = useMemo(() => vec3(), []);
+
   useFrame(() => {
     if (opponentMesh?.current) {
-      const posistionX = vec3(opponentApi?.current?.translation()).x;
+      const posistionX = opponentMesh.current.getWorldPosition(auxVec).x;
       opponentMesh.current.rotation.y = Math.PI * 2 - posistionX * -0.05;
     }
   });

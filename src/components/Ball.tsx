@@ -1,11 +1,13 @@
 import { RigidBody } from "@react-three/rapier";
 import { useRefs } from "../contexts/RefsContext";
 import { Trail } from "@react-three/drei";
-import { useGameStore } from "../stores/game-store";
+import { useOnlineStore } from "../stores/online-store";
+// import { useFrame } from "@react-three/fiber";
 
 export default function Ball() {
   const { ballApi } = useRefs();
-  const { touchedLastBy } = useGameStore((state) => state);
+
+  const room = useOnlineStore((state) => state.room);
 
   return (
     <RigidBody
@@ -13,13 +15,14 @@ export default function Ball() {
       ccd
       canSleep={false}
       colliders={"ball"}
-      type="dynamic"
+      type={room ? "fixed" : "dynamic"}
       position={[0, 10, 30]}
       restitution={1}
       mass={0.1}
     >
       <Trail
-        width={touchedLastBy ? 10 : 0} // Width of the line
+        // width={touchedLastBy ? 10 : 0} // Width of the line
+        width={10} // Width of the line
         color={"white"} // Color of the line
         length={2} // Length of the line
         decay={1} // How fast the line fades away

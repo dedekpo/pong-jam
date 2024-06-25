@@ -1,6 +1,8 @@
 import { create } from "zustand";
 import { Client, Room } from "colyseus.js";
 
+export type RematchVoteType = undefined | "ACCEPT" | "DECLINE";
+
 interface OnlineState {
   sessionId?: string;
   setSessionId: (sessionId: string | undefined) => void;
@@ -10,8 +12,10 @@ interface OnlineState {
   setClient: (client: Client | undefined) => void;
   room?: Room;
   setRoom: (room: Room | undefined) => void;
-  searchingMatch: boolean;
-  setSearchingMatch: (searchingMatch: boolean) => void;
+  opponentFound: boolean;
+  setOpponentFound: (found: boolean) => void;
+  opponentRematchVote: RematchVoteType;
+  setOpponentRematchVote: (vote: RematchVoteType) => void;
 }
 
 export const useOnlineStore = create<OnlineState>()((set) => ({
@@ -23,6 +27,8 @@ export const useOnlineStore = create<OnlineState>()((set) => ({
   setClient: (client) => set({ client }),
   room: undefined,
   setRoom: (room) => set({ room }),
-  searchingMatch: false,
-  setSearchingMatch: (searchingMatch) => set({ searchingMatch }),
+  opponentFound: false,
+  setOpponentFound: (found) => set({ opponentFound: found }),
+  opponentRematchVote: undefined,
+  setOpponentRematchVote: (vote) => set({ opponentRematchVote: vote }),
 }));

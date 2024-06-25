@@ -3,14 +3,27 @@ import { persist } from "zustand/middleware";
 
 type Players = "player" | "opponent";
 
+type GameStateType =
+  | "MENU"
+  | "FRIENDLY-MENU"
+  | "SEARCHING-ONLINE"
+  | "PLAYING-ONLINE"
+  | "PLAYING-VS-AI"
+  | "END-GAME-ONLINE"
+  | "END-GAME-VS-AI";
+
 interface GameControllerState {
   isGameStarted: boolean;
   setIsGameStarted: (isGameStarted: boolean) => void;
+  gameState: GameStateType;
+  setGameState: (gameState: GameStateType) => void;
 }
 
 export const useGameControllerStore = create<GameControllerState>()((set) => ({
   isGameStarted: false,
   setIsGameStarted: (isGameStarted) => set({ isGameStarted }),
+  gameState: "MENU",
+  setGameState: (gameState) => set({ gameState }),
 }));
 
 interface GameState {
@@ -35,6 +48,8 @@ interface ScoreState {
   canScore: boolean;
   setCanScore: (canScore: boolean) => void;
   resetScores: () => void;
+  playerWon: boolean;
+  setPlayerWon: (playerWon: boolean) => void;
 }
 
 export const useScoreStore = create<ScoreState>()((set) => ({
@@ -47,6 +62,8 @@ export const useScoreStore = create<ScoreState>()((set) => ({
   canScore: true,
   setCanScore: (canScore) => set({ canScore }),
   resetScores: () => set({ playerScore: 0, opponentScore: 0 }),
+  playerWon: false,
+  setPlayerWon: (playerWon) => set({ playerWon }),
 }));
 
 interface ConfettiState {

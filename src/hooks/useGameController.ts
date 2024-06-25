@@ -9,7 +9,7 @@ import { useOnlineStore } from "../stores/online-store";
 import useBall from "./useBall";
 
 export default function useGameController() {
-  const { setIsGameStarted } = useGameControllerStore();
+  const { setIsGameStarted, setGameState } = useGameControllerStore();
   const { setTouchedLastBy, setTouchedLastTable } = useGameStore();
   const {
     resetScores,
@@ -19,6 +19,7 @@ export default function useGameController() {
     setCanScore,
     playerScore,
     opponentScore,
+    setPlayerWon,
   } = useScoreStore();
   const { handleResetBall } = useBall();
   const { room } = useOnlineStore((state) => state);
@@ -36,6 +37,8 @@ export default function useGameController() {
 
   function handleEndGame() {
     setIsGameStarted(false);
+    setGameState("END-GAME-VS-AI");
+    setPlayerWon(playerScore > opponentScore);
     if (playerScore > opponentScore) {
       setIsConfettiActive(true);
     }

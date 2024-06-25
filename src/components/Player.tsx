@@ -7,15 +7,17 @@ import { vec3 } from "@react-three/rapier";
 import useTouchPosition from "../hooks/useTouchPosition";
 import { useGameControllerStore, usePaddleStore } from "../stores/game-store";
 import { useMemo } from "react";
+import { useOnlineStore } from "../stores/online-store";
 
 export default function Player() {
   const { racketApi, racketMesh, ballApi } = useRefs();
   const mousePosition = useTouchPosition();
   const { isGameStarted } = useGameControllerStore();
   const { playerColor } = usePaddleStore((state) => state);
+  const { room } = useOnlineStore();
 
   useFrame(() => {
-    if (racketApi?.current) {
+    if (racketApi?.current && !room) {
       const currentPosition = racketApi?.current.translation();
       const targetPosition = {
         x: mousePosition.xPercent * 0.5 - TABLE_WIDTH / 2 - 5,
@@ -74,7 +76,7 @@ export default function Player() {
 
   useFrame(() => {
     if (!racketMesh?.current) return;
-    if (!isGameStarted) {
+    if (!isGameStarted && !room) {
       racketMesh.current.position.lerp(restPosition, 0.2);
       // racketMesh.current.rotation.set(0, -Math.PI / 2.5, 0);
     } else {

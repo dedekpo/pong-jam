@@ -1,68 +1,63 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useOnlineStore } from "../stores/online-store";
 import {
   useConfettiStore,
   useGameControllerStore,
   useGameStore,
+  useGamificationStore,
   useNamesStore,
   usePaddleStore,
   useScoreStore,
 } from "../stores/game-store";
 import { useRefs } from "../contexts/RefsContext";
-
-type PlayerType = {
-  isHost: boolean;
-  isHandlingBall: boolean;
-  score: number;
-  position: {
-    x: number;
-    y: number;
-  };
-};
-
-type BallType = {
-  ballTranslation: {
-    x: number;
-    y: number;
-    z: number;
-  };
-  ballLinvel: {
-    x: number;
-    y: number;
-    z: number;
-  };
-  ballAngvel: {
-    x: number;
-    y: number;
-    z: number;
-  };
-};
+import useTouchPosition from "../hooks/useTouchPosition";
+import { TABLE_WIDTH } from "../config";
 
 const UPDATE_INTERVAL = 1000 / 30;
 
 export default function OnlineHandler() {
-  const { room, sessionId, setSearchingMatch, setHostId } = useOnlineStore(
-    (state) => state
-  );
-  const { setIsGameStarted } = useGameControllerStore();
-  const { resetScores, increaseOpponentScore, increasePlayerScore } =
-    useScoreStore();
-  const { opponentApi, racketApi, ballApi, playerIsHandlingBall } = useRefs();
+  const {
+    room,
+    sessionId,
+    setHostId,
+    hostId,
+    setOpponentFound,
+    setOpponentRematchVote,
+  } = useOnlineStore((state) => state);
+  const { setIsGameStarted, setGameState } = useGameControllerStore();
+  const {
+    resetScores,
+    increaseOpponentScore,
+    increasePlayerScore,
+    setPlayerWon,
+  } = useScoreStore();
+  const { opponentApi, ballApi, racketApi, playerIsHandlingBall } = useRefs();
   const { setTouchedLastBy } = useGameStore((state) => state);
   const setIsConfettiActive = useConfettiStore(
     (state) => state.setIsConfettiActive
   );
   const { setOpponentName } = useNamesStore((state) => state);
   const { setOpponentColor } = usePaddleStore((state) => state);
+  const mousePosition = useTouchPosition();
+  const addVictory = useGamificationStore((state) => state.addVictory);
+
+  const mousePositionRef = useRef(mousePosition);
+  const hostIdRef = useRef(hostId);
+
+  // Update the ref whenever mousePosition changes
+  useEffect(() => {
+    mousePositionRef.current = mousePosition;
+    hostIdRef.current = hostId;
+  }, [mousePosition, hostId]);
 
   function handleUpdate() {
     const interval = setInterval(() => {
-      const playerPosition = racketApi?.current?.translation();
+      const targetPosition = {
+        x: mousePositionRef.current.xPercent * 0.5 - TABLE_WIDTH / 2 - 5,
+        y: mousePositionRef.current.yPercent * -0.1 + 10,
+      };
 
-      room?.send("update", {
-        positionX: playerPosition?.x || 0,
-        positionY: playerPosition?.y || 0,
-      });
+      room?.send("update", targetPosition);
 
       if (playerIsHandlingBall.current) {
         const ballTranslation = ballApi?.current?.translation();
@@ -83,11 +78,51 @@ export default function OnlineHandler() {
 
     const interval = handleUpdate();
 
+    room.onMessage(
+      "update-positions",
+      ({ ball, playerRacket, opponentRacket }) => {
+        const playerIsHost = room.sessionId === hostIdRef.current;
+
+        ballApi?.current?.setTranslation(
+          {
+            x: ball.x,
+            y: ball.y,
+            z: ball.z * (playerIsHost ? 1 : -1),
+          },
+          true
+        );
+
+        if (playerIsHost) {
+          racketApi?.current?.setTranslation(playerRacket, true);
+          opponentApi?.current?.setTranslation(opponentRacket, true);
+          return;
+        }
+
+        racketApi?.current?.setTranslation(
+          {
+            x: opponentRacket.x,
+            y: opponentRacket.y,
+            z: 30,
+          },
+          true
+        );
+
+        opponentApi?.current?.setTranslation(
+          {
+            x: playerRacket.x,
+            y: playerRacket.y,
+            z: -30,
+          },
+          true
+        );
+      }
+    );
+
     room.onMessage("found-match", ({ hostId, players }) => {
       setHostId(hostId);
-      setSearchingMatch(false);
       resetScores();
       setTouchedLastBy(undefined);
+      setOpponentFound(true);
       for (const player of players) {
         if (player.id !== sessionId) {
           setOpponentName(player.playerName);
@@ -97,7 +132,7 @@ export default function OnlineHandler() {
     });
 
     room.onMessage("match-started", () => {
-      setSearchingMatch(false);
+      setGameState("PLAYING-ONLINE");
       setIsGameStarted(true);
     });
 
@@ -115,77 +150,31 @@ export default function OnlineHandler() {
 
     room.onMessage("winner", (playerId) => {
       setIsGameStarted(false);
+      setGameState("END-GAME-ONLINE");
+      setPlayerWon(room.sessionId === playerId);
       if (room.sessionId === playerId) {
+        addVictory();
         setIsConfettiActive(true);
       }
     });
 
-    room.onMessage("serve", ({ playerId }) => {
-      const playerScored = room.sessionId === playerId;
-      ballApi?.current?.setLinvel(
-        {
-          x: 0,
-          y: 0,
-          z: 0,
-        },
-        true
-      );
-      ballApi?.current?.setTranslation(
-        {
-          x: 0,
-          y: 10,
-          z: playerScored ? 30 : -30,
-        },
-        true
-      );
+    room.onMessage("voted-rematch", (playerId) => {
+      if (playerId !== sessionId) {
+        setOpponentRematchVote("ACCEPT");
+      }
     });
 
-    room.onMessage(
-      "update",
-      ({
-        players,
-        ball,
-      }: {
-        players: Record<string, PlayerType>;
-        ball: BallType;
-      }) => {
-        for (const [key, value] of Object.entries(players)) {
-          if (key === sessionId) {
-            playerIsHandlingBall.current = value.isHandlingBall;
-            continue;
-          }
-
-          // Opponent values
-          opponentApi?.current?.setTranslation(
-            { x: value.position.x, y: value.position.y, z: -30 },
-            true
-          );
-
-          playerIsHandlingBall.current = !value.isHandlingBall;
-        }
-
-        if (!playerIsHandlingBall.current) {
-          const isHost = players[sessionId].isHost;
-
-          ballApi?.current?.setTranslation(
-            {
-              x: ball.ballTranslation.x,
-              y: ball.ballTranslation.y,
-              z: ball.ballTranslation.z * (isHost ? 1 : -1),
-            },
-            true
-          );
-          ballApi?.current?.setLinvel(
-            {
-              x: ball.ballLinvel.x,
-              y: ball.ballLinvel.y,
-              z: ball.ballLinvel.z * (isHost ? 1 : -1),
-            },
-            true
-          );
-        }
+    room.onMessage("declined-rematch", (playerId) => {
+      if (playerId !== sessionId) {
+        setOpponentRematchVote("DECLINE");
       }
-    );
+    });
+
+    room.onMessage("rematch", () => {
+      setGameState("PLAYING-ONLINE");
+      setIsGameStarted(true);
+      resetScores();
+    });
 
     return () => {
       room.leave();

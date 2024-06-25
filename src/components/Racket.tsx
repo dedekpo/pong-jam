@@ -8,6 +8,7 @@ import { Suspense, forwardRef } from "react";
 import useRacket from "../hooks/useRacket";
 import { useGameStore } from "../stores/game-store";
 import { useFrame } from "@react-three/fiber";
+import { useOnlineStore } from "../stores/online-store";
 
 interface RacketProps extends RigidBodyProps {
   children?: React.ReactNode;
@@ -17,12 +18,13 @@ const Racket = forwardRef<RapierRigidBody, RacketProps>(
   ({ children, ...props }, ref) => {
     const { racketHitBall } = useRacket();
     const { touchedLastBy } = useGameStore((state) => state);
+    const { room } = useOnlineStore((state) => state);
 
     // Ensure ref is treated as a RefObject<RapierRigidBody> by TypeScript
     const rigidBodyRef = ref as React.MutableRefObject<RapierRigidBody | null>;
 
     useFrame(() => {
-      if (!touchedLastBy && rigidBodyRef.current) {
+      if (!touchedLastBy && rigidBodyRef.current && !room) {
         const playerModifier = props.name === "player-racket" ? 1 : -1;
         rigidBodyRef.current.setTranslation(
           { x: 0, y: 4, z: 30 * playerModifier },
@@ -50,7 +52,7 @@ const Racket = forwardRef<RapierRigidBody, RacketProps>(
             racketHitBall(isPlayer);
           }}
           position={[0.05, 0, -0.2]}
-          args={[2.2, 0.1, 2.2]}
+          args={[2.2, 0.3, 2.2]}
         />
         <Suspense>{children}</Suspense>
       </RigidBody>
