@@ -42,7 +42,7 @@ export default function Player() {
       };
 
       // Set the new interpolated position
-      racketApi?.current.setTranslation(interpolatedPosition, true);
+      racketApi?.current.setNextKinematicTranslation(interpolatedPosition);
     }
 
     if (racketMesh?.current && ballApi?.current && racketApi?.current) {

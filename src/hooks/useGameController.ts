@@ -1,4 +1,4 @@
-import { score } from "../audios";
+import { lost, score, victory } from "../audios";
 import {
   useConfettiStore,
   useGameControllerStore,
@@ -41,6 +41,9 @@ export default function useGameController() {
     setPlayerWon(playerScore > opponentScore);
     if (playerScore > opponentScore) {
       setIsConfettiActive(true);
+      victory.play();
+    } else {
+      lost.play();
     }
   }
 

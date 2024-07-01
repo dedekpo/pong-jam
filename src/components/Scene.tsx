@@ -13,6 +13,7 @@ import Score from "./Score";
 import { useGameControllerStore } from "../stores/game-store";
 import Neons from "./Neons";
 import { invalidate } from "@react-three/fiber";
+import PowerUps from "./PowerUps";
 
 export default function Scene() {
   const { isGameStarted } = useGameControllerStore();
@@ -54,6 +55,7 @@ export default function Scene() {
           <Opponent />
           <Ball />
           <BallOutSensor />
+          <PowerUps />
         </Physics>
       </Suspense>
       <CameraControls />

@@ -40,7 +40,7 @@ const Racket = forwardRef<RapierRigidBody, RacketProps>(
         canSleep={false}
         colliders={false}
         rotation={[Math.PI * 0.5, 0, Math.PI]}
-        type="fixed"
+        type="kinematicPosition"
         {...props}
       >
         <CuboidCollider

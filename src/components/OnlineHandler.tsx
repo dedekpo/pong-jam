@@ -12,6 +12,9 @@ import {
 import { useRefs } from "../contexts/RefsContext";
 import useTouchPosition from "../hooks/useTouchPosition";
 import { TABLE_WIDTH } from "../config";
+import { lerp } from "three/src/math/MathUtils.js";
+import { vec3 } from "@react-three/rapier";
+import { lost, victory } from "../audios";
 
 const UPDATE_INTERVAL = 1000 / 30;
 
@@ -83,36 +86,62 @@ export default function OnlineHandler() {
       ({ ball, playerRacket, opponentRacket }) => {
         const playerIsHost = room.sessionId === hostIdRef.current;
 
-        ballApi?.current?.setTranslation(
-          {
-            x: ball.x,
-            y: ball.y,
-            z: ball.z * (playerIsHost ? 1 : -1),
-          },
-          true
-        );
+        const currentBallPosition = vec3(ballApi?.current?.translation());
+        const targetBallPosition = {
+          x: ball.x,
+          y: ball.y,
+          z: ball.z * (playerIsHost ? 1 : -1),
+        };
 
-        if (playerIsHost) {
-          racketApi?.current?.setTranslation(playerRacket, true);
-          opponentApi?.current?.setTranslation(opponentRacket, true);
-          return;
-        }
+        // Define the interpolation factor t (0 to 1)
+        const ballT = 0.95; // Adjust t as needed for desired interpolation speed
 
-        racketApi?.current?.setTranslation(
-          {
-            x: opponentRacket.x,
-            y: opponentRacket.y,
-            z: 30,
-          },
-          true
+        const lerpedPosition = {
+          x: lerp(currentBallPosition.x, targetBallPosition.x, ballT),
+          y: lerp(currentBallPosition.y, targetBallPosition.y, ballT),
+          z: lerp(currentBallPosition.z, targetBallPosition.z, ballT),
+        };
+
+        ballApi?.current?.setTranslation(lerpedPosition, true);
+
+        const racketT = 0.5;
+
+        const currentPlayerPosition = vec3(racketApi?.current?.translation());
+        const playerPositionServer = playerIsHost
+          ? playerRacket
+          : opponentRacket;
+        const targetPlayerPosition = {
+          x: playerPositionServer.x,
+          y: playerPositionServer.y,
+          z: 30,
+        };
+        const playerLerpedPosition = {
+          x: lerp(currentPlayerPosition.x, targetPlayerPosition.x, racketT),
+          y: lerp(currentPlayerPosition.y, targetPlayerPosition.y, racketT),
+          z: lerp(currentPlayerPosition.z, targetPlayerPosition.z, racketT),
+        };
+
+        racketApi?.current?.setTranslation(playerLerpedPosition, true);
+
+        const currentOpponentPosition = vec3(
+          opponentApi?.current?.translation()
         );
+        const opponentPositionServer = playerIsHost
+          ? opponentRacket
+          : playerRacket;
+        const targetOpponentPosition = {
+          x: opponentPositionServer.x,
+          y: opponentPositionServer.y,
+          z: -30,
+        };
+        const opponentRacketLerpedPosition = {
+          x: lerp(currentOpponentPosition.x, targetOpponentPosition.x, racketT),
+          y: lerp(currentOpponentPosition.y, targetOpponentPosition.y, racketT),
+          z: lerp(currentOpponentPosition.z, targetOpponentPosition.z, racketT),
+        };
 
         opponentApi?.current?.setTranslation(
-          {
-            x: playerRacket.x,
-            y: playerRacket.y,
-            z: -30,
-          },
+          opponentRacketLerpedPosition,
           true
         );
       }
@@ -155,6 +184,9 @@ export default function OnlineHandler() {
       if (room.sessionId === playerId) {
         addVictory();
         setIsConfettiActive(true);
+        victory.play();
+      } else {
+        lost.play();
       }
     });
 

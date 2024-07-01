@@ -7,6 +7,7 @@ import FullScreen from "./ui/full-screen";
 import OnlineHandler from "./components/OnlineHandler";
 import Confetti from "./ui/confetti";
 import Menu from "./ui/menu/menu";
+import PowerUpDisplay from "./ui/power-up-display";
 export default function App() {
   useEffect(() => {
     // check if user interacted with the page
@@ -32,6 +33,7 @@ export default function App() {
         <FullScreen />
         <OnlineHandler />
         <Confetti />
+        <PowerUpDisplay />
       </RefsProvider>
     </div>
   );

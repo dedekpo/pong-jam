@@ -3,6 +3,8 @@ import { useRefs } from "../contexts/RefsContext";
 import { useGameStore } from "../stores/game-store";
 import { pingAudio, pongAudio } from "../audios";
 import { useOnlineStore } from "../stores/online-store";
+import { usePowerUpStore } from "../stores/power-up-store";
+import { useBallStore } from "../stores/ball-store";
 
 type PrecisionType = "PERFECT" | "GOOD" | "OK" | "BAD";
 
@@ -10,6 +12,9 @@ export default function useRacket() {
   const { ballApi, racketApi, opponentApi, playerIsHandlingBall } = useRefs();
   const setTouchedLastBy = useGameStore((state) => state.setTouchedLastBy);
   const { room } = useOnlineStore((state) => state);
+  const { selectedPowerUp, setIsActive, setSelectedPowerUp, isActive } =
+    usePowerUpStore();
+  const { powerUp, setPowerUp, showTrail, setShowTrail } = useBallStore();
 
   function getHitPrecision(distance: number): {
     precision: PrecisionType;
@@ -94,6 +99,7 @@ export default function useRacket() {
     const xVariation = variationBasedOnPrecision * 10;
     const yVariation = variationBasedOnPrecision * 1.5;
 
+    ballApi?.current?.resetForces(true);
     ballApi?.current?.setLinvel({ x: 0, y: 0, z: 0 }, true);
     ballApi?.current?.setAngvel({ x: 0, y: 0, z: 0 }, true);
     ballApi?.current?.applyImpulse(
@@ -104,6 +110,43 @@ export default function useRacket() {
       },
       true
     );
+
+    if (powerUp) {
+      setPowerUp(undefined);
+    }
+    if (!showTrail) {
+      setShowTrail(true);
+    }
+
+    if (selectedPowerUp === "super-curve" && isActive) {
+      ballApi?.current?.addForce(
+        {
+          x: targetPosition.x > 0 ? -8 : 8,
+          y: 0,
+          z: 0,
+        },
+        true
+      );
+      setIsActive(false);
+      setSelectedPowerUp(undefined);
+      setPowerUp("super-curve");
+      return;
+    }
+
+    if (selectedPowerUp === "super-hit" && isActive) {
+      ballApi?.current?.addForce(
+        {
+          x: 0,
+          y: -4,
+          z: 18 * playeModifier,
+        },
+        true
+      );
+      setIsActive(false);
+      setSelectedPowerUp(undefined);
+      setPowerUp("super-hit");
+      return;
+    }
   }
 
   return {
