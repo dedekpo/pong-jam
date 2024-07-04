@@ -107,11 +107,11 @@ function PowerUpObject() {
     const randomPowerUp =
       powerUpNames[getRandomNumberBetween(0, powerUpNames.length - 1)];
 
-    const pseudoRandom = "increase-size";
+    // const pseudoRandom = "increase-size";
 
-    setSelectedPowerUp(pseudoRandom);
+    setSelectedPowerUp(randomPowerUp);
 
-    switch (pseudoRandom) {
+    switch (randomPowerUp) {
       case "camera-shake":
         setTimeout(() => {
           setSelectedPowerUp(undefined);
