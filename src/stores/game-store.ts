@@ -83,12 +83,17 @@ interface PaddleState {
   setOpponentColor: (color: string) => void;
 }
 
-export const usePaddleStore = create<PaddleState>()((set) => ({
-  playerColor: "#d94c51",
-  opponentColor: "#4547bf",
-  setPlayerColor: (color) => set({ playerColor: color }),
-  setOpponentColor: (color) => set({ opponentColor: color }),
-}));
+export const usePaddleStore = create<PaddleState>()(
+  persist(
+    (set) => ({
+      playerColor: "#d94c51",
+      opponentColor: "#4547bf",
+      setPlayerColor: (color) => set({ playerColor: color }),
+      setOpponentColor: (color) => set({ opponentColor: color }),
+    }),
+    { name: "player-colors" }
+  )
+);
 
 interface GamificationProps {
   victories: number;

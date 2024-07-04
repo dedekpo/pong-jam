@@ -42,3 +42,13 @@ export const usePowerUpStore = create<PowerUpState>()((set) => ({
   ballPowerUp: undefined,
   setBallPowerUp: (powerUp) => set({ ballPowerUp: powerUp }),
 }));
+
+interface OpponentState {
+  powerUpPosition: PositionType | undefined;
+  setPowerUpPosition: (position: PositionType | undefined) => void;
+}
+
+export const useOpponentStore = create<OpponentState>()((set) => ({
+  powerUpPosition: undefined,
+  setPowerUpPosition: (position) => set({ powerUpPosition: position }),
+}));

@@ -118,7 +118,7 @@ export default function useRacket() {
       setShowTrail(true);
     }
 
-    if (selectedPowerUp === "super-curve" && isActive) {
+    if (isPlayer && selectedPowerUp === "super-curve" && isActive) {
       ballApi?.current?.addForce(
         {
           x: targetPosition.x > 0 ? -8 : 8,
@@ -133,7 +133,7 @@ export default function useRacket() {
       return;
     }
 
-    if (selectedPowerUp === "super-hit" && isActive) {
+    if (isPlayer && selectedPowerUp === "super-hit" && isActive) {
       ballApi?.current?.addForce(
         {
           x: 0,

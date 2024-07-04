@@ -11,10 +11,10 @@ import {
 } from "../stores/game-store";
 import { useRefs } from "../contexts/RefsContext";
 import useTouchPosition from "../hooks/useTouchPosition";
-import { TABLE_WIDTH } from "../config";
 import { lerp } from "three/src/math/MathUtils.js";
 import { vec3 } from "@react-three/rapier";
 import { lost, victory } from "../audios";
+import { useOpponentStore, usePowerUpStore } from "../stores/power-up-store";
 
 const UPDATE_INTERVAL = 1000 / 30;
 
@@ -34,7 +34,13 @@ export default function OnlineHandler() {
     increasePlayerScore,
     setPlayerWon,
   } = useScoreStore();
-  const { opponentApi, ballApi, racketApi, playerIsHandlingBall } = useRefs();
+  const {
+    opponentApi,
+    ballApi,
+    racketApi,
+    playerIsHandlingBall,
+    opponentMesh,
+  } = useRefs();
   const { setTouchedLastBy } = useGameStore((state) => state);
   const setIsConfettiActive = useConfettiStore(
     (state) => state.setIsConfettiActive
@@ -43,6 +49,8 @@ export default function OnlineHandler() {
   const { setOpponentColor } = usePaddleStore((state) => state);
   const mousePosition = useTouchPosition();
   const addVictory = useGamificationStore((state) => state.addVictory);
+  const { setPowerUpPosition } = useOpponentStore();
+  const { setIsActive } = usePowerUpStore();
 
   const mousePositionRef = useRef(mousePosition);
   const hostIdRef = useRef(hostId);
@@ -55,9 +63,10 @@ export default function OnlineHandler() {
 
   function handleUpdate() {
     const interval = setInterval(() => {
+      const position = vec3(racketApi?.current?.translation());
       const targetPosition = {
-        x: mousePositionRef.current.xPercent * 0.5 - TABLE_WIDTH / 2 - 5,
-        y: mousePositionRef.current.yPercent * -0.1 + 10,
+        x: position.x,
+        y: position.y,
       };
 
       room?.send("update", targetPosition);
@@ -80,6 +89,40 @@ export default function OnlineHandler() {
     if (!room || !sessionId) return;
 
     const interval = handleUpdate();
+
+    room.onMessage("increase-size", ({ player }) => {
+      if (player !== room.sessionId) {
+        opponentMesh?.current?.scale.set(0.4, 0.4, 0.4);
+        setTimeout(() => {
+          opponentMesh?.current?.scale.set(0.2, 0.2, 0.2);
+        }, 5 * 1000);
+      }
+    });
+
+    room.onMessage("spawn-power-up", ({ player, position }) => {
+      if (player !== room.sessionId) {
+        setPowerUpPosition({
+          x: position.x,
+          y: position.y,
+          z: position.z * -1,
+        });
+      }
+    });
+
+    room.onMessage("remove-power-up", ({ player }) => {
+      if (player !== room.sessionId) {
+        setPowerUpPosition(undefined);
+      }
+    });
+
+    room.onMessage("racket-hit-ball", ({ player, needToRemovePowerUp }) => {
+      if (player === room.sessionId) {
+        if (needToRemovePowerUp) {
+          setIsActive(false);
+        }
+        setTouchedLastBy(player);
+      }
+    });
 
     room.onMessage(
       "update-positions",
@@ -104,24 +147,7 @@ export default function OnlineHandler() {
 
         ballApi?.current?.setTranslation(lerpedPosition, true);
 
-        const racketT = 0.5;
-
-        const currentPlayerPosition = vec3(racketApi?.current?.translation());
-        const playerPositionServer = playerIsHost
-          ? playerRacket
-          : opponentRacket;
-        const targetPlayerPosition = {
-          x: playerPositionServer.x,
-          y: playerPositionServer.y,
-          z: 30,
-        };
-        const playerLerpedPosition = {
-          x: lerp(currentPlayerPosition.x, targetPlayerPosition.x, racketT),
-          y: lerp(currentPlayerPosition.y, targetPlayerPosition.y, racketT),
-          z: lerp(currentPlayerPosition.z, targetPlayerPosition.z, racketT),
-        };
-
-        racketApi?.current?.setTranslation(playerLerpedPosition, true);
+        const racketT = 0.8;
 
         const currentOpponentPosition = vec3(
           opponentApi?.current?.translation()

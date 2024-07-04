@@ -3,6 +3,7 @@ import { useRefs } from "../contexts/RefsContext";
 import { Trail } from "@react-three/drei";
 import { useOnlineStore } from "../stores/online-store";
 import { useBallStore } from "../stores/ball-store";
+import { useFrame } from "@react-three/fiber";
 // import { useFrame } from "@react-three/fiber";
 
 export default function Ball() {
@@ -11,15 +12,22 @@ export default function Ball() {
   const room = useOnlineStore((state) => state.room);
   const { powerUp, showTrail } = useBallStore();
 
-  const trailColor =
-    powerUp === "super-hit"
-      ? "#b52b37"
-      : powerUp === "super-curve"
-      ? "yellow"
-      : "white";
+  const trailColor = "white";
+  // powerUp === "super-hit"
+  //   ? "#b52b37"
+  //   : powerUp === "super-curve"
+  //   ? "yellow"
+  //   : "white";
 
   const trailStride = powerUp === "slow-motion" ? 1 : 0;
   const trailInterval = powerUp === "slow-motion" ? 0 : 1;
+
+  useFrame(() => {
+    if (room) {
+      ballApi?.current?.setLinvel({ x: 0, y: 0, z: 0 }, true);
+      ballApi?.current?.setAngvel({ x: 0, y: 0, z: 0 }, true);
+    }
+  });
 
   return (
     <RigidBody
@@ -27,7 +35,7 @@ export default function Ball() {
       ccd
       canSleep={false}
       colliders={"ball"}
-      type={room ? "fixed" : "dynamic"}
+      type={"dynamic"}
       position={[0, 10, 30]}
       restitution={1}
       mass={0.1}

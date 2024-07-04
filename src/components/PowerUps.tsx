@@ -5,9 +5,12 @@ import * as THREE from "three";
 import { useRefs } from "../contexts/RefsContext";
 import { getRandomNumberBetween } from "../utils";
 import { SECONDS_TO_RESPAWN_POWER_UP, powerUpNames } from "../config";
-import { usePowerUpStore } from "../stores/power-up-store";
+import { useOpponentStore, usePowerUpStore } from "../stores/power-up-store";
 import { vec3 } from "@react-three/rapier";
 import { selectSound } from "../audios";
+import { useOnlineStore } from "../stores/online-store";
+import OpponentPowerUp from "./OpponentPowerUp";
+import { useGameControllerStore } from "../stores/game-store";
 
 export default function PowerUps() {
   const {
@@ -17,30 +20,57 @@ export default function PowerUps() {
     isActive,
     isModalOpen,
   } = usePowerUpStore();
+  const { racketMesh } = useRefs();
+  const { room } = useOnlineStore();
+  const { powerUpPosition } = useOpponentStore();
+  const { isGameStarted } = useGameControllerStore();
 
   const isActiveRef = useRef(isActive);
   const displayPowerUpRef = useRef(displayPowerUp);
   const isModalOpenRef = useRef(displayPowerUp);
+  const roomRef = useRef(room);
+  const isGameStartedRef = useRef(isGameStarted);
 
   useEffect(() => {
     isActiveRef.current = isActive;
     displayPowerUpRef.current = displayPowerUp;
     isModalOpenRef.current = isModalOpen;
-  }, [isActive, displayPowerUp, isModalOpen]);
+    roomRef.current = room;
+    isGameStartedRef.current = isGameStarted;
+  }, [isActive, displayPowerUp, isModalOpen, room, isGameStarted]);
+
+  const auxVec = useMemo(() => new THREE.Vector3(), []);
 
   useEffect(() => {
     const interval = setInterval(() => {
       if (
         !displayPowerUpRef.current &&
         !isActiveRef.current &&
-        !isModalOpenRef.current
+        !isModalOpenRef.current &&
+        isGameStartedRef.current
       ) {
-        const modifier = Math.random() - 0.5 > 0 ? 1 : -1;
-        setPowerUpPosition({
-          x: 10 * modifier,
-          y: getRandomNumberBetween(1, 10),
-          z: 30,
-        });
+        let distance = 0;
+        let positionToSpawn = vec3({ x: 0, y: 0, z: 0 });
+
+        while (distance < 10) {
+          const modifier = Math.random() - 0.5 > 0 ? 1 : -1;
+          positionToSpawn = vec3({
+            x: 13 * modifier,
+            y: getRandomNumberBetween(1, 10),
+            z: 30,
+          });
+          const playerPosition = vec3(
+            racketMesh?.current?.getWorldPosition(auxVec)
+          );
+
+          distance = positionToSpawn.distanceTo(playerPosition);
+        }
+
+        if (roomRef.current) {
+          roomRef.current.send("spawn-power-up", positionToSpawn);
+        }
+
+        setPowerUpPosition(positionToSpawn);
         setDisplayPowerUp(true);
       }
       return () => clearInterval(interval);
@@ -51,6 +81,7 @@ export default function PowerUps() {
     <>
       <ActivePowerUps />
       {displayPowerUp && <PowerUpObject />}
+      {powerUpPosition && <OpponentPowerUp powerUpPosition={powerUpPosition} />}
     </>
   );
 }
@@ -66,6 +97,8 @@ function PowerUpObject() {
     setIsActive,
   } = usePowerUpStore();
 
+  const { room } = useOnlineStore();
+
   function handleGrabPowerUp() {
     selectSound.play();
 
@@ -74,11 +107,11 @@ function PowerUpObject() {
     const randomPowerUp =
       powerUpNames[getRandomNumberBetween(0, powerUpNames.length - 1)];
 
-    // const pseudoRandom = "super-curve";
+    const pseudoRandom = "increase-size";
 
-    setSelectedPowerUp(randomPowerUp);
+    setSelectedPowerUp(pseudoRandom);
 
-    switch (randomPowerUp) {
+    switch (pseudoRandom) {
       case "camera-shake":
         setTimeout(() => {
           setSelectedPowerUp(undefined);
@@ -123,6 +156,9 @@ function PowerUpObject() {
 
     if (distance < 3) {
       handleGrabPowerUp();
+      if (room) {
+        room.send("remove-power-up");
+      }
     }
   });
 
@@ -172,11 +208,15 @@ function ActivePowerUps() {
   const { selectedPowerUp, setSelectedPowerUp, isActive, setIsActive } =
     usePowerUpStore();
   const { racketMesh, racketApi } = useRefs();
+  const { room } = useOnlineStore();
 
   useEffect(() => {
     if (selectedPowerUp && isActive) {
       switch (selectedPowerUp) {
         case "increase-size":
+          if (room) {
+            room.send("increase-size");
+          }
           racketMesh?.current?.scale.set(0.4, 0.4, 0.4);
           racketApi?.current
             ?.collider(0)

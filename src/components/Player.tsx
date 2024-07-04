@@ -5,51 +5,58 @@ import PingPong from "../models/RacketMesh";
 import Racket from "./Racket";
 import { vec3 } from "@react-three/rapier";
 import useTouchPosition from "../hooks/useTouchPosition";
-import { useGameControllerStore, usePaddleStore } from "../stores/game-store";
+import {
+  useGameControllerStore,
+  useGameStore,
+  usePaddleStore,
+} from "../stores/game-store";
 import { useMemo } from "react";
-import { useOnlineStore } from "../stores/online-store";
 
 export default function Player() {
   const { racketApi, racketMesh, ballApi } = useRefs();
   const mousePosition = useTouchPosition();
   const { isGameStarted } = useGameControllerStore();
   const { playerColor } = usePaddleStore((state) => state);
-  const { room } = useOnlineStore();
+  const { touchedLastBy } = useGameStore((state) => state);
 
   useFrame(() => {
-    if (racketApi?.current && !room) {
-      const currentPosition = racketApi?.current.translation();
-      const targetPosition = {
-        x: mousePosition.xPercent * 0.5 - TABLE_WIDTH / 2 - 5,
-        y: mousePosition.yPercent * -0.1 + 10,
-        z: currentPosition.z, // assuming z remains constant
-      };
+    if (racketApi?.current) {
+      if (touchedLastBy) {
+        const currentPosition = racketApi?.current.translation();
+        const targetPosition = {
+          x: mousePosition.xPercent * 0.5 - TABLE_WIDTH / 2 - 5,
+          y: mousePosition.yPercent * -0.1 + 10,
+          z: currentPosition.z, // assuming z remains constant
+        };
 
-      // Determine the interpolation speed factor
-      const lerpFactor = 0.1; // Adjust this value to change the smoothness
+        // Determine the interpolation speed factor
+        const lerpFactor = 0.1; // Adjust this value to change the smoothness
 
-      // Calculate the interpolated position
-      const interpolatedPosition = {
-        x:
-          currentPosition.x +
-          lerpFactor * (targetPosition.x - currentPosition.x),
-        y:
-          currentPosition.y +
-          lerpFactor * (targetPosition.y - currentPosition.y),
-        z:
-          currentPosition.z +
-          lerpFactor * (targetPosition.z - currentPosition.z),
-      };
+        // Calculate the interpolated position
+        const interpolatedPosition = {
+          x:
+            currentPosition.x +
+            lerpFactor * (targetPosition.x - currentPosition.x),
+          y:
+            currentPosition.y +
+            lerpFactor * (targetPosition.y - currentPosition.y),
+          z:
+            currentPosition.z +
+            lerpFactor * (targetPosition.z - currentPosition.z),
+        };
 
-      // Set the new interpolated position
-      racketApi?.current.setNextKinematicTranslation(interpolatedPosition);
+        // Set the new interpolated position
+        racketApi?.current.setNextKinematicTranslation(interpolatedPosition);
+      } else {
+        racketApi?.current.setNextKinematicTranslation({ x: 0, y: 4, z: 30 });
+      }
     }
 
     if (racketMesh?.current && ballApi?.current && racketApi?.current) {
       const ballPosition = vec3(ballApi.current.translation());
       const distance = ballPosition.distanceTo(racketApi.current.translation());
 
-      let rotationY = Math.PI * -0.5 - mousePosition.xPercent * -0.03;
+      const rotationY = Math.PI * -0.5 - mousePosition.xPercent * -0.03;
       let rotationX = 0;
 
       if (distance < 5) {
@@ -76,9 +83,8 @@ export default function Player() {
 
   useFrame(() => {
     if (!racketMesh?.current) return;
-    if (!isGameStarted && !room) {
+    if (!isGameStarted) {
       racketMesh.current.position.lerp(restPosition, 0.2);
-      // racketMesh.current.rotation.set(0, -Math.PI / 2.5, 0);
     } else {
       // Lerp position
       racketMesh.current.position.lerp(originalPosition, 0.2); // 0.1 is the interpolation factor, adjust for speed

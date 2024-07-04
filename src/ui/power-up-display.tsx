@@ -5,9 +5,10 @@ import {
   SlowMotionIcon,
   SuperCurveIcon,
   SuperShotIcon,
-} from "../assets/power-ups";
+} from "../assets/power-ups-icons";
 import GameStyle from "./game-style";
 import { usePowerUpStore } from "../stores/power-up-store";
+import { useOnlineStore } from "../stores/online-store";
 
 export default function PowerUpDisplay() {
   const { isModalOpen } = usePowerUpStore();
@@ -19,6 +20,7 @@ export default function PowerUpDisplay() {
 
 function PowerUpSpinner() {
   const { selectedPowerUp, setIsModalOpen, setIsActive } = usePowerUpStore();
+  const { room } = useOnlineStore();
 
   const [selectedToDisplay, setSelectedToDisplay] = useState({
     name: "",
@@ -28,9 +30,11 @@ function PowerUpSpinner() {
   const displayedCount = useRef(0);
 
   const selectedPowerUpRef = useRef(selectedPowerUp);
+  const roomRef = useRef(room);
   useEffect(() => {
     selectedPowerUpRef.current = selectedPowerUp;
-  }, [selectedPowerUp]);
+    roomRef.current = room;
+  }, [selectedPowerUp, room]);
 
   const availablePowerUps = useMemo(
     () => ({
@@ -61,9 +65,14 @@ function PowerUpSpinner() {
   useEffect(() => {
     const interval = setInterval(() => {
       if (displayedCount.current >= 20 && selectedPowerUpRef.current) {
-        setSelectedToDisplay(availablePowerUps[selectedPowerUpRef.current]);
+        const powerUpName = selectedPowerUpRef.current;
+        const selectedPowerUp = availablePowerUps[selectedPowerUpRef.current];
+        setSelectedToDisplay(selectedPowerUp);
         setTimeout(() => {
           setIsActive(true);
+          if (roomRef.current) {
+            roomRef.current.send("grabbed-power-up", powerUpName);
+          }
         }, 1000);
         setTimeout(() => {
           setIsModalOpen(false);
@@ -75,7 +84,7 @@ function PowerUpSpinner() {
       const randomKey = Object.keys(availablePowerUps)[currentKey.current];
       currentKey.current =
         (currentKey.current + 1) % Object.keys(availablePowerUps).length;
-      // @ts-ignore
+      // @ts-expect-error because the key is a string
       setSelectedToDisplay(availablePowerUps[randomKey]);
       displayedCount.current += 1;
     }, 100);
