@@ -12,8 +12,7 @@ export default function useRacket() {
   const { ballApi, racketApi, opponentApi, playerIsHandlingBall } = useRefs();
   const setTouchedLastBy = useGameStore((state) => state.setTouchedLastBy);
   const { room } = useOnlineStore((state) => state);
-  const { selectedPowerUp, setIsActive, setSelectedPowerUp, isActive } =
-    usePowerUpStore();
+  const { p1PowerUp, setP1PowerUp, setP1State } = usePowerUpStore();
   const { powerUp, setPowerUp, showTrail, setShowTrail } = useBallStore();
 
   function getHitPrecision(distance: number): {
@@ -118,7 +117,7 @@ export default function useRacket() {
       setShowTrail(true);
     }
 
-    if (isPlayer && selectedPowerUp === "super-curve" && isActive) {
+    if (isPlayer && p1PowerUp === "super-curve") {
       ballApi?.current?.addForce(
         {
           x: targetPosition.x > 0 ? -8 : 8,
@@ -127,13 +126,15 @@ export default function useRacket() {
         },
         true
       );
-      setIsActive(false);
-      setSelectedPowerUp(undefined);
+      setP1PowerUp(undefined);
       setPowerUp("super-curve");
+      setTimeout(() => {
+        setP1State("none");
+      }, 1 * 1000);
       return;
     }
 
-    if (isPlayer && selectedPowerUp === "super-hit" && isActive) {
+    if (isPlayer && p1PowerUp === "super-hit") {
       ballApi?.current?.addForce(
         {
           x: 0,
@@ -142,9 +143,11 @@ export default function useRacket() {
         },
         true
       );
-      setIsActive(false);
-      setSelectedPowerUp(undefined);
+      setP1PowerUp(undefined);
       setPowerUp("super-hit");
+      setTimeout(() => {
+        setP1State("none");
+      }, 1 * 1000);
       return;
     }
   }

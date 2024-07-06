@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   CameraShakeIcon,
   IncreasePaddleIcon,
@@ -6,104 +6,133 @@ import {
   SuperCurveIcon,
   SuperShotIcon,
 } from "../assets/power-ups-icons";
-import GameStyle from "./game-style";
 import { usePowerUpStore } from "../stores/power-up-store";
-import { useOnlineStore } from "../stores/online-store";
+import { useGameControllerStore } from "../stores/game-store";
 
-export default function PowerUpDisplay() {
-  const { isModalOpen } = usePowerUpStore();
-
-  if (!isModalOpen) return null;
-
-  return <PowerUpSpinner />;
+interface PowerUp {
+  name: string;
+  icon: React.ReactElement;
 }
 
-function PowerUpSpinner() {
-  const { selectedPowerUp, setIsModalOpen, setIsActive } = usePowerUpStore();
-  const { room } = useOnlineStore();
+type AvailablePowerUps = {
+  [key: string]: PowerUp;
+};
 
-  const [selectedToDisplay, setSelectedToDisplay] = useState({
-    name: "",
-    icon: <></>,
-  });
-  const currentKey = useRef(0);
-  const displayedCount = useRef(0);
+const availablePowerUps: AvailablePowerUps = {
+  "super-hit": {
+    name: "Super Hit",
+    icon: <SuperShotIcon />,
+  },
+  "super-curve": {
+    name: "Super Curve",
+    icon: <SuperCurveIcon />,
+  },
+  "increase-size": {
+    name: "Increase Size",
+    icon: <IncreasePaddleIcon />,
+  },
+  "slow-motion": {
+    name: "Slow Motion",
+    icon: <SlowMotionIcon />,
+  },
+  "camera-shake": {
+    name: "Camera Shake",
+    icon: <CameraShakeIcon />,
+  },
+};
 
-  const selectedPowerUpRef = useRef(selectedPowerUp);
-  const roomRef = useRef(room);
-  useEffect(() => {
-    selectedPowerUpRef.current = selectedPowerUp;
-    roomRef.current = room;
-  }, [selectedPowerUp, room]);
+export default function PowerUpDisplay() {
+  const { isGameStarted } = useGameControllerStore();
 
-  const availablePowerUps = useMemo(
-    () => ({
-      "super-hit": {
-        name: "Super Hit",
-        icon: <SuperShotIcon />,
-      },
-      "super-curve": {
-        name: "Super Curve",
-        icon: <SuperCurveIcon />,
-      },
-      "increase-size": {
-        name: "Increase Size",
-        icon: <IncreasePaddleIcon />,
-      },
-      "slow-motion": {
-        name: "Slow Motion",
-        icon: <SlowMotionIcon />,
-      },
-      "camera-shake": {
-        name: "Camera Shake",
-        icon: <CameraShakeIcon />,
-      },
-    }),
-    []
+  if (!isGameStarted) return null;
+
+  return (
+    <>
+      <div className="absolute top-[30px] left-0 right-0 mx-auto w-min z-50 flex gap-16 text-white">
+        <PlayerSpinner />
+        <OpponentSpinner />
+      </div>
+    </>
   );
+}
+
+function PlayerSpinner() {
+  const { p1State, p1PowerUp } = usePowerUpStore();
+
+  const currentPowerUp = p1PowerUp ? availablePowerUps[p1PowerUp] : undefined;
+
+  return (
+    <div className="min-w-[60px] min-h-[60px] max-w-[60px] max-h-[60px]">
+      {p1State === "none" && <EmptySpinner name="Player" />}
+      {p1State === "spinning" && <CrazySpinner />}
+      {p1State === "showing" && currentPowerUp && (
+        <DefinedPowerUp name={currentPowerUp.name} icon={currentPowerUp.icon} />
+      )}
+    </div>
+  );
+}
+
+function OpponentSpinner() {
+  const { p2State, p2PowerUp } = usePowerUpStore();
+
+  const currentPowerUp = p2PowerUp ? availablePowerUps[p2PowerUp] : undefined;
+
+  return (
+    <div className="min-w-[60px] min-h-[60px] max-w-[60px] max-h-[60px]">
+      {p2State === "none" && <EmptySpinner name="Opponent" />}
+      {p2State === "spinning" && <CrazySpinner />}
+      {p2State === "showing" && (
+        <DefinedPowerUp
+          name={currentPowerUp?.name}
+          icon={currentPowerUp?.icon}
+        />
+      )}
+    </div>
+  );
+}
+
+function CrazySpinner() {
+  const counter = useRef(0);
+  const [currentPowerUp, setCurrentPowerUp] = useState<PowerUp>();
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (displayedCount.current >= 20 && selectedPowerUpRef.current) {
-        const powerUpName = selectedPowerUpRef.current;
-        const selectedPowerUp = availablePowerUps[selectedPowerUpRef.current];
-        setSelectedToDisplay(selectedPowerUp);
-        setTimeout(() => {
-          setIsActive(true);
-          if (roomRef.current) {
-            roomRef.current.send("grabbed-power-up", powerUpName);
-          }
-        }, 1000);
-        setTimeout(() => {
-          setIsModalOpen(false);
-        }, 3000);
-        selectedPowerUpRef.current = undefined;
-        displayedCount.current = 0;
-        return clearInterval(interval);
-      }
-      const randomKey = Object.keys(availablePowerUps)[currentKey.current];
-      currentKey.current =
-        (currentKey.current + 1) % Object.keys(availablePowerUps).length;
-      // @ts-expect-error because the key is a string
-      setSelectedToDisplay(availablePowerUps[randomKey]);
-      displayedCount.current += 1;
-    }, 100);
-
-    return () => {
-      displayedCount.current = 0;
-      selectedPowerUpRef.current = undefined;
-      clearInterval(interval);
-    };
+      const randomKey = Object.keys(availablePowerUps)[counter.current];
+      counter.current =
+        (counter.current + 1) % Object.keys(availablePowerUps).length;
+      setCurrentPowerUp(availablePowerUps[randomKey]);
+    }, 200);
+    return () => clearInterval(interval);
   }, []);
 
+  if (!currentPowerUp) return null;
+
   return (
-    <GameStyle className="absolute top-[50px] left-0 right-0 mx-auto w-min z-50">
-      <div className="bg-white h-full flex items-center justify-center gap-5 p-4">
-        <div className="size-[50px]">{selectedToDisplay.icon}</div>
-        <span className="text-2xl font-bold w-[165px]">
-          {selectedToDisplay.name}
-        </span>
+    <DefinedPowerUp name={currentPowerUp.name} icon={currentPowerUp.icon} />
+  );
+}
+
+function EmptySpinner({ name }: { name: string }) {
+  return (
+    <div className="text-[0.5rem] w-full h-full border-2 rounded-full border-dotted flex items-center justify-center opacity-50">
+      {name}
+    </div>
+  );
+}
+
+function DefinedPowerUp({
+  name,
+  icon,
+}: {
+  name?: string;
+  icon?: React.ReactNode;
+}) {
+  return (
+    <div className="w-full h-full flex flex-col items-center gap-2">
+      <div className="w-full h-full border-2 rounded-full">{icon}</div>
+      <div className="text-[0.5rem] whitespace-nowrap text-center w-min opacity-70">
+        {name}
       </div>
-    </GameStyle>
+    </div>
   );
 }
