@@ -59,14 +59,12 @@ export default function PowerUpObject() {
 
           break;
         case "camera-shake":
-          setP1PowerUp("camera-shake");
           setTimeout(() => {
             setP1PowerUp(undefined);
             setP1State("none");
           }, 8 * 1000);
           break;
         case "slow-motion":
-          setP1PowerUp("slow-motion");
           setTimeout(() => {
             setP1PowerUp(undefined);
             setP1State("none");

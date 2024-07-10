@@ -12,14 +12,13 @@ export default function Ball() {
   const room = useOnlineStore((state) => state.room);
   const { powerUp, showTrail } = useBallStore();
 
-  const trailColor = "white";
-  // powerUp === "super-hit"
-  //   ? "#b52b37"
-  //   : powerUp === "super-curve"
-  //   ? "yellow"
-  //   : "white";
+  const trailColor =
+    powerUp === "super-hit"
+      ? "#b52b37"
+      : powerUp === "super-curve"
+      ? "yellow"
+      : "white";
 
-  const trailStride = powerUp === "slow-motion" ? 1 : 0;
   const trailInterval = powerUp === "slow-motion" ? 0 : 1;
 
   useFrame(() => {
@@ -46,7 +45,7 @@ export default function Ball() {
         length={2} // Length of the line
         decay={1} // How fast the line fades away
         local={false} // Wether to use the target's world or local positions
-        stride={trailStride} // Min distance between previous and current point
+        stride={0.5} // Min distance between previous and current point
         interval={trailInterval} // Number of frames to wait before next calculation
         target={undefined} // Optional target. This object will produce the trail.
         attenuation={(width) => width} // A function to define the width in each point along it.

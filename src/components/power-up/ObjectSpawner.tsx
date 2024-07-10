@@ -49,7 +49,6 @@ export default function ObjectSpawner() {
         }
 
         if (roomRef.current) {
-          console.log("spawning power up", positionToSpawn);
           roomRef.current.send("spawn-power-up", positionToSpawn);
         }
 

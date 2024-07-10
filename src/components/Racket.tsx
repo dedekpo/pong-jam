@@ -4,7 +4,7 @@ import {
   RigidBody,
   RigidBodyProps,
 } from "@react-three/rapier";
-import { Suspense, forwardRef } from "react";
+import { Suspense, forwardRef, useRef } from "react";
 import useRacket from "../hooks/useRacket";
 import { useGameStore } from "../stores/game-store";
 import { useFrame } from "@react-three/fiber";
@@ -19,6 +19,7 @@ const Racket = forwardRef<RapierRigidBody, RacketProps>(
     const { racketHitBall } = useRacket();
     const { touchedLastBy } = useGameStore((state) => state);
     const { room } = useOnlineStore((state) => state);
+    const racketHitDelay = useRef(false);
 
     // Ensure ref is treated as a RefObject<RapierRigidBody> by TypeScript
     const rigidBodyRef = ref as React.MutableRefObject<RapierRigidBody | null>;
@@ -46,10 +47,14 @@ const Racket = forwardRef<RapierRigidBody, RacketProps>(
         <CuboidCollider
           name={props.name}
           onContactForce={({ totalForceMagnitude, target }) => {
-            if (totalForceMagnitude < 10) return;
+            if (totalForceMagnitude < 10 || racketHitDelay.current) return;
             const isPlayer = target.colliderObject?.name === "player-racket";
 
             racketHitBall(isPlayer);
+            racketHitDelay.current = true;
+            setTimeout(() => {
+              racketHitDelay.current = false;
+            }, 500);
           }}
           position={[0.05, 0, -0.2]}
           args={[2.2, 0.3, 2.2]}

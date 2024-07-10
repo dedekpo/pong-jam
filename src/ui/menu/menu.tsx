@@ -101,15 +101,15 @@ function EndOnlineGameMenu() {
   return (
     <div className="h-full flex items-center justify-center">
       <GameStyle className="bg-white w-[50%] h-[90%] lg:w-[450px] lg:h-[450px] rounded-lg">
-        <div className="flex flex-col items-center justify-center h-full gap-10">
+        <div className="flex flex-col items-center justify-center h-full gap-5 lg:gap-10">
           <span className="font-bold text-2xl">
             {playerWon ? "You win!" : `${opponentName} wins!`}
           </span>
           <div className="flex flex-col items-center gap-2 text-black">
             <VictoriesCount />
           </div>
-          <div className="flex flex-col w-full items-center gap-4">
-            <GameStyle className="relative w-[50%] h-12">
+          <div className="flex flex-col w-full items-center gap-3 lg:gap-4">
+            <GameStyle className="relative w-[50%] h-10 lg:h-12">
               {votedForRematch && (
                 <div className="absolute -left-[22%] top-0 bottom-0">
                   <div className="size-12">
@@ -139,12 +139,12 @@ function EndOnlineGameMenu() {
                 </div>
               )}
             </GameStyle>
-            <GameStyle className="w-[50%] h-12">
+            <GameStyle className="w-[50%] h-10 lg:h-12">
               <button onClick={handlePlayAgain} className="w-full h-full">
                 New Match
               </button>
             </GameStyle>
-            <GameStyle className="w-[50%] h-12">
+            <GameStyle className="w-[50%] h-10 lg:h-12">
               <button onClick={handleGoToMenu} className="w-full h-full">
                 Go to Menu
               </button>
@@ -179,7 +179,7 @@ function MainMenu() {
 
   return (
     <>
-      <div className="absolute top-0 bottom-0 my-auto right-[5vw] h-min flex flex-col gap-10">
+      <div className="absolute top-0 bottom-0 my-auto right-5 lg:right-[5vw] h-min flex flex-col gap-5 lg:gap-10">
         <ButtonMenu icon={<InternetIcon />} onClick={handleOpenFriendlyMenu}>
           Play vs Friend
         </ButtonMenu>
@@ -218,7 +218,7 @@ function SearchingMatchMenu() {
   return (
     <div className="absolute top-0 right-0 flex items-center justify-center h-screen w-screen">
       <div className="relative">
-        <GameStyle className="bg-white w-[50%] h-[90%] lg:w-[450px] lg:h-[450px] rounded-lg">
+        <GameStyle className="bg-white w-[450px] h-[350px] lg:w-[450px] lg:h-[450px] rounded-lg">
           <div className="flex flex-col gap-[10%] items-center justify-center h-full">
             <div className="relative w-[40%] h-[40%] animate-pulse">
               <PlayerIcon />
@@ -275,7 +275,7 @@ function FriendlyMatchMenu() {
   return (
     <div className="absolute top-0 right-0 flex items-center justify-center h-screen w-screen">
       <div className="relative">
-        <GameStyle className="bg-white w-[50%] h-[90%] lg:w-[450px] lg:h-[350px] rounded-lg">
+        <GameStyle className="bg-white w-[400px] h-[300px] lg:w-[450px] lg:h-[350px] rounded-lg">
           <div className="flex flex-col gap-[10%] items-center justify-center h-full">
             <span className="font-bold text-xl uppercase">
               Challenge a friend
@@ -355,14 +355,18 @@ function ButtonMenu({
     <div className="relative">
       <GameStyle
         className={`z-10 relative ${translateX && `-translate-x-[30px]`}
-        ${size === "big" ? "w-[350px] h-[130px]" : "w-[340px] h-[90px]"}`}
+        ${
+          size === "big"
+            ? "w-[230px] h-[90px] lg:w-[350px] lg:h-[130px]"
+            : "w-[210px] h-[70px] lg:w-[340px] lg:h-[90px]"
+        }`}
       >
         <button
           {...props}
-          className={`w-full h-full bg-gray-100 rounded-lg shadow-2xl text-3xl font-bold flex items-center justify-center gap-4`}
+          className={`w-full h-full bg-gray-100 rounded-lg shadow-2xl text-xl lg:text-3xl font-bold flex items-center justify-center gap-4`}
         >
-          <span> {children}</span>
-          {icon && <div className="size-14">{icon}</div>}
+          <span>{children}</span>
+          {icon && <div className="size-10 lg:size-14">{icon}</div>}
         </button>
       </GameStyle>
       <div className="absolute left-0 top-0 bottom-0 my-auto h-[5px] w-[1000px] bg-gray-300" />
@@ -374,7 +378,7 @@ function NameInput() {
   const { playerName, setPlayerName } = useNamesStore((state) => state);
 
   return (
-    <div className="absolute top-10 right-0 left-0 mx-auto w-min flex flex-col items-center">
+    <div className="absolute top-3 lg:top-10 right-0 left-0 mx-auto w-min flex flex-col items-center">
       <span className="text-gray-100">Player name:</span>
       <input
         type="text"
