@@ -53,14 +53,14 @@ export default function useGameController() {
     if (!canScore || room?.roomId) return;
     if (player === "player") {
       increasePlayerScore(1);
-      if (playerScore >= 4) {
+      if (playerScore >= 6) {
         handleEndGame();
       }
     }
 
     if (player === "opponent") {
       increaseOpponentScore(1);
-      if (opponentScore >= 4) {
+      if (opponentScore >= 6) {
         handleEndGame();
       }
     }
