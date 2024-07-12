@@ -1,4 +1,5 @@
 import { lost, score, victory } from "../audios";
+import { SDKStopGame } from "../lib/poki-sdk";
 import {
   useConfettiStore,
   useGameControllerStore,
@@ -39,6 +40,7 @@ export default function useGameController() {
     setIsGameStarted(false);
     setGameState("END-GAME-VS-AI");
     setPlayerWon(playerScore > opponentScore);
+    SDKStopGame();
     if (playerScore > opponentScore) {
       setIsConfettiActive(true);
       victory.play();

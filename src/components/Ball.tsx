@@ -45,7 +45,7 @@ export default function Ball() {
         length={2} // Length of the line
         decay={1} // How fast the line fades away
         local={false} // Wether to use the target's world or local positions
-        stride={0.5} // Min distance between previous and current point
+        stride={0.1} // Min distance between previous and current point
         interval={trailInterval} // Number of frames to wait before next calculation
         target={undefined} // Optional target. This object will produce the trail.
         attenuation={(width) => width} // A function to define the width in each point along it.

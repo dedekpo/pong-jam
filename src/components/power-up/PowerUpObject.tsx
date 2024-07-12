@@ -37,25 +37,25 @@ export default function PowerUpObject() {
       setP1PowerUp(randomPowerUp);
       setP1State("showing");
 
+      if (room) {
+        room.send("power-up-ready");
+      }
+
       switch (randomPowerUp) {
         case "increase-size":
-          if (room) {
-            room.send("increase-size");
-          }
-
           racketMesh?.current?.scale.set(0.4, 0.4, 0.4);
           racketApi?.current
             ?.collider(0)
-            .setHalfExtents(vec3({ x: 4.5, y: 0.2, z: 5 }));
+            .setHalfExtents(vec3({ x: 4.5, y: 0.3, z: 5 }));
 
           setTimeout(() => {
             racketMesh?.current?.scale.set(0.2, 0.2, 0.2);
             racketApi?.current
               ?.collider(0)
-              .setHalfExtents(vec3({ x: 2.2, y: 0.2, z: 2.4 }));
+              .setHalfExtents(vec3({ x: 2.2, y: 0.3, z: 2.4 }));
             setP1PowerUp(undefined);
             setP1State("none");
-          }, 5 * 1000);
+          }, 8 * 1000);
 
           break;
         case "camera-shake":

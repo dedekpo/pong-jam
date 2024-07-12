@@ -13,9 +13,11 @@ import { useRefs } from "../contexts/RefsContext";
 import useTouchPosition from "../hooks/useTouchPosition";
 import { lerp } from "three/src/math/MathUtils.js";
 import { vec3 } from "@react-three/rapier";
-import { lost, victory } from "../audios";
+import { lost, selectSound, victory } from "../audios";
 import { useOpponentStore, usePowerUpStore } from "../stores/power-up-store";
 import { TABLE_WIDTH } from "../config";
+import { useBallStore } from "../stores/ball-store";
+import { SDKStopGame, SKDStartGameWithoutAd } from "../lib/poki-sdk";
 
 const UPDATE_INTERVAL = 1000 / 30;
 
@@ -52,6 +54,7 @@ export default function OnlineHandler() {
   const addVictory = useGamificationStore((state) => state.addVictory);
   const { setPowerUpPosition } = useOpponentStore();
   const { setP2State, setP2PowerUp } = usePowerUpStore();
+  const { setPowerUp, setShowTrail } = useBallStore();
 
   const mousePositionRef = useRef(mousePosition);
   const hostIdRef = useRef(hostId);
@@ -90,17 +93,19 @@ export default function OnlineHandler() {
 
     const interval = handleUpdate();
 
-    room.onMessage("grabbed-power-up", ({ player, powerUp }) => {
-      if (player !== room.sessionId) {
-        setP2State("spinning");
-        setTimeout(() => {
-          setP2State("showing");
-          setP2PowerUp(powerUp);
-        }, 2 * 1000);
-        setTimeout(() => {
-          setP2State("none");
-          setP2PowerUp(undefined);
-        }, 4 * 1000);
+    room.onMessage("set-show-trail", (show) => {
+      setShowTrail(show);
+    });
+
+    room.onMessage("ball-changed-trail", (powerUp) => {
+      if (powerUp === "none") {
+        setPowerUp(undefined);
+      }
+      if (powerUp === "super-hit") {
+        setPowerUp("super-hit");
+      }
+      if (powerUp === "super-curve") {
+        setPowerUp("super-curve");
       }
     });
 
@@ -123,7 +128,7 @@ export default function OnlineHandler() {
         opponentMesh?.current?.scale.set(0.4, 0.4, 0.4);
         setTimeout(() => {
           opponentMesh?.current?.scale.set(0.2, 0.2, 0.2);
-        }, 5 * 1000);
+        }, 8 * 1000);
       }
     });
 
@@ -140,6 +145,7 @@ export default function OnlineHandler() {
     room.onMessage("remove-power-up", ({ player }) => {
       if (player !== room.sessionId) {
         setPowerUpPosition(undefined);
+        selectSound.play();
       }
     });
 
@@ -223,6 +229,7 @@ export default function OnlineHandler() {
     });
 
     room.onMessage("match-started", () => {
+      SKDStartGameWithoutAd();
       setGameState("PLAYING-ONLINE");
       setIsGameStarted(true);
     });
@@ -243,6 +250,7 @@ export default function OnlineHandler() {
       setIsGameStarted(false);
       setGameState("END-GAME-ONLINE");
       setPlayerWon(room.sessionId === playerId);
+      SDKStopGame();
       if (room.sessionId === playerId) {
         addVictory();
         setIsConfettiActive(true);

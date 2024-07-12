@@ -12,9 +12,7 @@ export default function useOnline() {
   async function joinRoom() {
     // wss://pong-server-production-5438.up.railway.app
     // ws://localhost:2567
-    const newClient = new Client(
-      "wss://pong-server-production-5438.up.railway.app"
-    );
+    const newClient = new Client("ws://localhost:2567");
     setClient(newClient);
 
     const room = await newClient.joinOrCreate("pong_room", {
@@ -29,9 +27,7 @@ export default function useOnline() {
   }
 
   async function createRoom() {
-    const newClient = new Client(
-      "wss://pong-server-production-5438.up.railway.app"
-    );
+    const newClient = new Client("ws://localhost:2567");
 
     setClient(newClient);
 
@@ -49,9 +45,7 @@ export default function useOnline() {
   }
 
   async function joinByRoomCode(code: string) {
-    const newClient = new Client(
-      "wss://pong-server-production-5438.up.railway.app"
-    );
+    const newClient = new Client("ws://localhost:2567");
     setClient(newClient);
 
     const foundRoom = await newClient.joinById(code, {

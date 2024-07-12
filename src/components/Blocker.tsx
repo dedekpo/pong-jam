@@ -26,7 +26,7 @@ export default function Blocker() {
       friction={0.9}
     >
       <mesh position={[0, -0.3, 0]} receiveShadow>
-        <boxGeometry args={[40, 2.4, 0.2]} />
+        <boxGeometry args={[40, 2.4, 0.3]} />
         <meshStandardMaterial color="red" metalness={0.8} />
       </mesh>
     </RigidBody>

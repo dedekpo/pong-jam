@@ -17,15 +17,15 @@ export default function ActivePowerUps() {
 function CameraShakePowerUp() {
   return (
     <CameraShake
-      maxYaw={0.05} // Max amount camera can yaw in either direction
-      maxPitch={0.05} // Max amount camera can pitch in either direction
-      maxRoll={0.05} // Max amount camera can roll in either direction
-      yawFrequency={1} // Frequency of the the yaw rotation
-      pitchFrequency={1} // Frequency of the pitch rotation
-      rollFrequency={1} // Frequency of the roll rotation
+      maxYaw={0.1} // Max amount camera can yaw in either direction
+      maxPitch={0.1} // Max amount camera can pitch in either direction
+      maxRoll={0.1} // Max amount camera can roll in either direction
+      yawFrequency={1.6} // Frequency of the the yaw rotation
+      pitchFrequency={1.6} // Frequency of the pitch rotation
+      rollFrequency={1.6} // Frequency of the roll rotation
       intensity={1} // initial intensity of the shake
-      decay
-      decayRate={0.65} // if decay = true this is the rate at which intensity will reduce at
+      // decay
+      // decayRate={0.3} // if decay = true this is the rate at which intensity will reduce at
     />
   );
 }

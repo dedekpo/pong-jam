@@ -20,6 +20,7 @@ import {
 import { useOnlineStore } from "../../stores/online-store";
 import GameStyle from "../game-style";
 import EditPaddle from "./edit-paddle";
+import { SDKStartGame, SKDStartGameWithoutAd } from "../../lib/poki-sdk";
 
 export default function Menu() {
   const { gameState } = useGameControllerStore();
@@ -41,8 +42,10 @@ function EndAiGameMenu() {
   const playerWon = useScoreStore((state) => state.playerWon);
 
   function handleRematch() {
-    setGameState("PLAYING-VS-AI");
-    handleStartGame();
+    SDKStartGame(() => {
+      setGameState("PLAYING-VS-AI");
+      handleStartGame();
+    });
   }
 
   function handleGoToMenu() {
@@ -167,14 +170,17 @@ function MainMenu() {
   }
 
   async function handlePlayOnline() {
+    SKDStartGameWithoutAd();
     setGameState("SEARCHING-ONLINE");
     await joinRoom();
   }
 
   function handlePlayVSAI() {
-    setGameState("PLAYING-VS-AI");
-    setOpponentName("");
-    handleStartGame();
+    SDKStartGame(() => {
+      setGameState("PLAYING-VS-AI");
+      setOpponentName("");
+      handleStartGame();
+    });
   }
 
   return (

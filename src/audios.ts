@@ -1,12 +1,14 @@
-export const pingAudio = new Audio("./ping.mp3");
-export const pongAudio = new Audio("./pong.mp3");
-export const table = new Audio("./table.mp3");
-export const score = new Audio("./score.mp3");
-export const lost = new Audio("./lost.mp3");
-export const selectSound = new Audio("./select-sound.mp3");
-export const victory = new Audio("./victory.mp3");
+import { Howl } from "howler";
 
-const sunset = new Audio("./sunset.mp3");
-sunset.volume = 0.5;
-sunset.loop = true;
-export { sunset };
+export const pingAudio = new Howl({ src: ["./ping.mp3"] });
+export const pongAudio = new Howl({ src: ["./pong.mp3"] });
+export const table = new Howl({ src: ["./table.mp3"] });
+export const score = new Howl({ src: ["./score.mp3"] });
+export const lost = new Howl({ src: ["./lost.mp3"] });
+export const selectSound = new Howl({ src: ["./select-sound.mp3"] });
+export const victory = new Howl({ src: ["./victory.mp3"] });
+export const sunset = new Howl({
+  src: ["./sunset.mp3"],
+  loop: true,
+  volume: 0.5,
+});
