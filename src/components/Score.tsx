@@ -15,7 +15,7 @@ export default function Score() {
         fontWeight="bold"
         outlineWidth={0.015}
         outlineColor={"black"}
-        font="./sans-serif.woff"
+        font="./assets/sans-serif.woff"
       >
         {playerScore}
       </Text>
@@ -27,7 +27,7 @@ export default function Score() {
         fontWeight="bold"
         outlineWidth={0.015}
         outlineColor={"black"}
-        font="./sans-serif.woff"
+        font="./assets/sans-serif.woff"
       >
         {opponentScore}
       </Text>
@@ -40,7 +40,7 @@ export default function Score() {
           fontWeight="bold"
           outlineWidth={0.015}
           outlineColor={"black"}
-          font="./sans-serif.woff"
+          font="./assets/sans-serif.woff"
         >
           {opponentName}
         </Text>

@@ -36,7 +36,7 @@ function FloorArc({ xPosition = 0 }) {
       scale={isOuter ? 20 : 10}
       fillOpacity={0.5}
       letterSpacing={-0.0001}
-      font="./sans-serif.woff"
+      font="./assets/sans-serif.woff"
     >
       _________________________
     </Text>
@@ -55,7 +55,7 @@ function NeonArc({ zPosition = 0 }) {
         scale={10}
         fillOpacity={0.5}
         letterSpacing={-0.0001}
-        font="./sans-serif.woff"
+        font="./assets/sans-serif.woff"
       >
         __________
       </Text>
@@ -68,7 +68,7 @@ function NeonArc({ zPosition = 0 }) {
         scale={10}
         fillOpacity={0.5}
         letterSpacing={-0.0001}
-        font="./sans-serif.woff"
+        font="./assets/sans-serif.woff"
       >
         __________
       </Text>
@@ -87,7 +87,7 @@ function NeonCeiling({ xPosition = 0 }) {
       scale={10}
       fillOpacity={0.5}
       letterSpacing={-0.0001}
-      font="./sans-serif.woff"
+      font="./assets/sans-serif.woff"
     >
       ____________________
     </Text>

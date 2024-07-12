@@ -31,7 +31,7 @@ type GLTFResult = GLTF & {
   };
 };
 
-const url = "./models/pingpong.glb";
+const url = "./assets/pingpong.glb";
 
 interface RacketMeshProps extends Omit<JSX.IntrinsicElements["group"], "ref"> {
   color: string;
