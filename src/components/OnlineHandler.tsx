@@ -246,6 +246,17 @@ export default function OnlineHandler() {
       setTouchedLastBy(undefined);
     });
 
+    room.onMessage("player-left", (playerId) => {
+      if (playerId === sessionId) return;
+      setIsGameStarted(false);
+      setGameState("END-GAME-ONLINE");
+      setPlayerWon(true);
+      SDKStopGame();
+      addVictory();
+      setIsConfettiActive(true);
+      victory.play();
+    });
+
     room.onMessage("winner", (playerId) => {
       setIsGameStarted(false);
       setGameState("END-GAME-ONLINE");
