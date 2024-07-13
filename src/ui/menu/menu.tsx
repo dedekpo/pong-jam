@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   InternetIcon,
   LoadingSpinnerIcon,
@@ -81,7 +81,8 @@ function EndOnlineGameMenu() {
   const { setGameState } = useGameControllerStore();
   const playerWon = useScoreStore((state) => state.playerWon);
   const { opponentName } = useNamesStore((state) => state);
-  const { room, opponentRematchVote } = useOnlineStore();
+  const { room, opponentRematchVote, setOpponentRematchVote } =
+    useOnlineStore();
   const [votedForRematch, setVotedForRematch] = useState(false);
   const { leaveRoom } = useOnline();
 
@@ -101,9 +102,15 @@ function EndOnlineGameMenu() {
     setGameState("MENU");
   }
 
+  useEffect(() => {
+    return () => {
+      setOpponentRematchVote(undefined);
+    };
+  }, []);
+
   return (
     <div className="h-full flex items-center justify-center">
-      <GameStyle className="bg-white w-[50%] h-[90%] lg:w-[450px] lg:h-[450px] rounded-lg">
+      <GameStyle className="bg-white w-[500px] h-[500px] lg:w-[450px] lg:h-[450px] rounded-lg">
         <div className="flex flex-col items-center justify-center h-full gap-5 lg:gap-10">
           <span className="font-bold text-2xl">
             {playerWon ? "You win!" : `${opponentName} wins!`}
@@ -189,14 +196,23 @@ function MainMenu() {
         <ButtonMenu icon={<InternetIcon />} onClick={handleOpenFriendlyMenu}>
           Play vs Friend
         </ButtonMenu>
-        <ButtonMenu
-          size="big"
-          icon={<Rank />}
-          onClick={handlePlayOnline}
-          translateX
-        >
-          Play Online
-        </ButtonMenu>
+        <div className="relative">
+          <div className="absolute left-4 -top-2 z-50 flex items-center gap-2 text-white bg-black rounded-full shadow-2xl px-3 text-center">
+            <LockIcon />
+            <span>Coming soon</span>
+          </div>
+          <div className="opacity-50">
+            <ButtonMenu
+              size="big"
+              icon={<Rank />}
+              onClick={handlePlayOnline}
+              translateX
+              disabled
+            >
+              Play Ranked
+            </ButtonMenu>
+          </div>
+        </div>
         <ButtonMenu icon={<RobotIcon />} onClick={handlePlayVSAI}>
           Play vs AI
         </ButtonMenu>
@@ -207,6 +223,25 @@ function MainMenu() {
       </div>
       <EditPaddle />
     </>
+  );
+}
+
+function LockIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+      className="size-4"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"
+      />
+    </svg>
   );
 }
 
@@ -261,6 +296,7 @@ function FriendlyMatchMenu() {
 
   const [generatedCode, setGeneratedCode] = useState("");
   const [codeInput, setCodeInput] = useState("");
+  const [roomNotFound, setRoomNotFound] = useState(false);
   const { setGameState } = useGameControllerStore();
 
   async function handleCreateRoom() {
@@ -268,8 +304,11 @@ function FriendlyMatchMenu() {
     setGeneratedCode(room.roomId);
   }
 
-  function handleSearchRoom() {
-    joinByRoomCode(codeInput);
+  async function handleSearchRoom() {
+    const foundRoom = await joinByRoomCode(codeInput);
+    if (!foundRoom) {
+      setRoomNotFound(true);
+    }
   }
 
   function handleCloseFriendlyMenu() {
@@ -325,6 +364,11 @@ function FriendlyMatchMenu() {
                     </button>
                   </GameStyle>
                 </div>
+                {roomNotFound && (
+                  <span className="absolute bottom-5 text-red-400 font-bold">
+                    Room not found
+                  </span>
+                )}
               </>
             )}
           </div>
@@ -401,7 +445,7 @@ function VictoriesCount() {
   return (
     <>
       <div className="relative border-2">
-        <div className="size-12 bg-red-400 rotate-45 border-2" />
+        <div className="size-12 bg-black rotate-45 border-2" />
         <span className="absolute top-0 left-0 w-full h-full flex items-center justify-center text-gray-100">
           {victories}
         </span>

@@ -3,7 +3,7 @@ import { useOnlineStore } from "../stores/online-store";
 import { useNamesStore, usePaddleStore } from "../stores/game-store";
 
 export default function useOnline() {
-  const { room, setClient, setRoom, setSessionId } = useOnlineStore(
+  const { room, client, setClient, setRoom, setSessionId } = useOnlineStore(
     (state) => state
   );
   const { playerName } = useNamesStore((state) => state);
@@ -12,9 +12,7 @@ export default function useOnline() {
   async function joinRoom() {
     // wss://pong-server-production-5438.up.railway.app
     // ws://localhost:2567
-    const newClient = new Client(
-      "wss://pong-server-production-5438.up.railway.app"
-    );
+    const newClient = client || new Client("ws://localhost:2567");
     setClient(newClient);
 
     const room = await newClient.joinOrCreate("pong_room", {
@@ -29,9 +27,7 @@ export default function useOnline() {
   }
 
   async function createRoom() {
-    const newClient = new Client(
-      "wss://pong-server-production-5438.up.railway.app"
-    );
+    const newClient = client || new Client("ws://localhost:2567");
 
     setClient(newClient);
 
@@ -49,19 +45,25 @@ export default function useOnline() {
   }
 
   async function joinByRoomCode(code: string) {
-    const newClient = new Client(
-      "wss://pong-server-production-5438.up.railway.app"
-    );
+    const newClient = client || new Client("ws://localhost:2567");
     setClient(newClient);
 
-    const foundRoom = await newClient.joinById(code, {
-      playerName: playerName,
-      playerColor: playerColor,
-    });
+    let foundRoom;
 
-    setRoom(foundRoom);
+    try {
+      foundRoom = await newClient.joinById(code, {
+        playerName: playerName,
+        playerColor: playerColor,
+      });
+    } catch (error) {
+      console.error(error);
+    }
 
-    setSessionId(foundRoom.sessionId);
+    if (foundRoom) {
+      setRoom(foundRoom);
+
+      setSessionId(foundRoom.sessionId);
+    }
 
     return foundRoom;
   }

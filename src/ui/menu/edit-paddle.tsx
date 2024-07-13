@@ -25,7 +25,7 @@ export default function EditPaddle() {
   }
 
   return (
-    <div className="absolute bottom-10 left-10 w-min bg-slate-100 border-2 rounded-lg shadow-2xl flex items-center pr-5">
+    <div className="absolute bottom-10 left-10 w-min bg-slate-100 border-2 border-black rounded-lg shadow-2xl flex items-center pr-5">
       <button
         onClick={handleEditOpen}
         className="whitespace-nowrap w-[200px] h-[70px] flex items-center gap-4 justify-center"
@@ -33,7 +33,7 @@ export default function EditPaddle() {
         <div className="size-10">
           <PaddleIcon />
         </div>
-        <span className="text-xl font-bold">Edit Player</span>
+        <span className="text-xl font-bold">Customize</span>
       </button>
       {isEditing && (
         <div className="flex items-center gap-2 border-l-2 pl-4">

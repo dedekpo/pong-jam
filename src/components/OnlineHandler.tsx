@@ -13,7 +13,14 @@ import { useRefs } from "../contexts/RefsContext";
 import useTouchPosition from "../hooks/useTouchPosition";
 import { lerp } from "three/src/math/MathUtils.js";
 import { vec3 } from "@react-three/rapier";
-import { lost, selectSound, victory } from "../audios";
+import {
+  lost,
+  pingAudio,
+  pongAudio,
+  selectSound,
+  table,
+  victory,
+} from "../audios";
 import { useOpponentStore, usePowerUpStore } from "../stores/power-up-store";
 import { TABLE_WIDTH } from "../config";
 import { useBallStore } from "../stores/ball-store";
@@ -112,14 +119,17 @@ export default function OnlineHandler() {
     room.onMessage("grabbed-power-up", ({ player, powerUp }) => {
       if (player !== room.sessionId) {
         setP2State("spinning");
-        setTimeout(() => {
-          setP2State("showing");
-          setP2PowerUp(powerUp);
-        }, 2 * 1000);
+        setP2PowerUp(powerUp);
+      }
+    });
+
+    room.onMessage("power-up-ready", ({ player }) => {
+      if (player !== room.sessionId) {
+        setP2State("showing");
         setTimeout(() => {
           setP2State("none");
           setP2PowerUp(undefined);
-        }, 6 * 1000);
+        }, 4 * 1000);
       }
     });
 
@@ -287,6 +297,18 @@ export default function OnlineHandler() {
       setGameState("PLAYING-ONLINE");
       setIsGameStarted(true);
       resetScores();
+    });
+
+    room.onMessage("play-hit-racket", (player) => {
+      if (player) {
+        pingAudio.play();
+      } else {
+        pongAudio.play();
+      }
+    });
+
+    room.onMessage("play-hit-table", () => {
+      table.play();
     });
 
     return () => {

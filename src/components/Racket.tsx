@@ -9,6 +9,7 @@ import useRacket from "../hooks/useRacket";
 import { useGameStore } from "../stores/game-store";
 import { useFrame } from "@react-three/fiber";
 import { useOnlineStore } from "../stores/online-store";
+import { pingAudio, pongAudio } from "../audios";
 
 interface RacketProps extends RigidBodyProps {
   children?: React.ReactNode;
@@ -48,10 +49,20 @@ const Racket = forwardRef<RapierRigidBody, RacketProps>(
           name={props.name}
           onContactForce={({ totalForceMagnitude, target }) => {
             if (totalForceMagnitude < 10 || racketHitDelay.current) return;
+
             const isPlayer = target.colliderObject?.name === "player-racket";
+
+            if (!room) {
+              if (isPlayer) {
+                pingAudio.play();
+              } else {
+                pongAudio.play();
+              }
+            }
 
             racketHitBall(isPlayer);
             racketHitDelay.current = true;
+
             setTimeout(() => {
               racketHitDelay.current = false;
             }, 500);

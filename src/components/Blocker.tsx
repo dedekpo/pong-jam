@@ -10,7 +10,7 @@ export default function Blocker() {
     const decreasedBallVelocity = {
       x: ballVelocity.x * 0.1,
       y: ballVelocity.y * 0.1,
-      z: ballVelocity.z * 0.1,
+      z: ballVelocity.z * -0.3,
     };
     ballApi.current.setLinvel(decreasedBallVelocity, true);
   }

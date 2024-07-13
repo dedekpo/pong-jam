@@ -1,7 +1,6 @@
 import { vec3 } from "@react-three/rapier";
 import { useRefs } from "../contexts/RefsContext";
 import { useGameStore } from "../stores/game-store";
-import { pingAudio, pongAudio } from "../audios";
 import { useOnlineStore } from "../stores/online-store";
 import { usePowerUpStore } from "../stores/power-up-store";
 import { useBallStore } from "../stores/ball-store";
@@ -56,12 +55,6 @@ export default function useRacket() {
 
     if (isPlayer && playerIsHandlingBall.current) {
       room?.send("hit-ball");
-    }
-
-    if (isPlayer) {
-      pingAudio.play();
-    } else {
-      pongAudio.play();
     }
 
     const playeModifier = isPlayer ? -1 : 1;

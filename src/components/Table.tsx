@@ -6,6 +6,8 @@ import useGameController from "../hooks/useGameController";
 import { useRefs } from "../contexts/RefsContext";
 import { useOnlineStore } from "../stores/online-store";
 
+type PlayerOrOpponent = "player" | "opponent";
+
 export default function Table() {
   const { touchedLastBy, touchedLastTable, setTouchedLastTable } = useGameStore(
     (state) => state
@@ -15,8 +17,7 @@ export default function Table() {
   const { handleScore } = useGameController();
   const { playerIsHandlingBall } = useRefs();
 
-  function handleTableCollision(player: "player" | "opponent") {
-    table.play();
+  function handleTableCollision(player: PlayerOrOpponent) {
     if (player === "player") {
       if (playerIsHandlingBall.current) {
         room?.send("hit-my-table");
@@ -39,6 +40,18 @@ export default function Table() {
     }
   }
 
+  function handleContactForce(
+    player: PlayerOrOpponent,
+    totalForceMagnitude: number
+  ) {
+    if (totalForceMagnitude < 10) return;
+    handleTableCollision(player);
+
+    if (!room) {
+      table.play();
+    }
+  }
+
   return (
     <>
       <RigidBody
@@ -46,10 +59,9 @@ export default function Table() {
         type="fixed"
         restitution={0.7}
         friction={0.9}
-        onContactForce={({ totalForceMagnitude }) => {
-          if (totalForceMagnitude < 10) return;
-          handleTableCollision("player");
-        }}
+        onContactForce={({ totalForceMagnitude }) =>
+          handleContactForce("player", totalForceMagnitude)
+        }
       >
         <mesh position={[0, -2, 15]} receiveShadow>
           <boxGeometry args={[TABLE_WIDTH, 1, 30]} />
@@ -61,10 +73,9 @@ export default function Table() {
         type="fixed"
         restitution={0.7}
         friction={0.9}
-        onContactForce={({ totalForceMagnitude }) => {
-          if (totalForceMagnitude < 10) return;
-          handleTableCollision("opponent");
-        }}
+        onContactForce={({ totalForceMagnitude }) =>
+          handleContactForce("opponent", totalForceMagnitude)
+        }
       >
         <mesh position={[0, -2, -15]} receiveShadow>
           <boxGeometry args={[TABLE_WIDTH, 1, 30]} />

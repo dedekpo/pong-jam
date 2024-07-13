@@ -3,7 +3,6 @@ import { RefsProvider } from "./contexts/RefsContext";
 import Scene from "./components/Scene";
 import { useEffect } from "react";
 import { sunset } from "./audios";
-import FullScreen from "./ui/full-screen";
 import OnlineHandler from "./components/OnlineHandler";
 import Confetti from "./ui/confetti";
 import Menu from "./ui/menu/menu";
@@ -47,7 +46,6 @@ export default function App() {
       <RefsProvider>
         <Scene />
         <Menu />
-        <FullScreen />
         <OnlineHandler />
         <Confetti />
         <PowerUpDisplay />
