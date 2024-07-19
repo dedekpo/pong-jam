@@ -13,7 +13,7 @@ export default function Opponent() {
   const { room } = useOnlineStore((state) => state);
   const { opponentColor } = usePaddleStore((state) => state);
 
-  useFrame(() => {
+  useFrame((_, delta) => {
     if (room) return; // Is online mode
     if (opponentApi?.current) {
       const currentOpponentPosition = vec3(opponentApi?.current?.translation());
@@ -25,7 +25,7 @@ export default function Opponent() {
       };
 
       // Determine the interpolation speed factor
-      const lerpFactor = 0.2; // Adjust this value based on desired responsiveness
+      const lerpFactor = 5 * delta; // Adjust this value based on desired responsiveness
 
       // Calculate the interpolated position
       const interpolatedPosition = {
