@@ -21,6 +21,7 @@ import { useOnlineStore } from "../../stores/online-store";
 import GameStyle from "../game-style";
 import EditPaddle from "./edit-paddle";
 import { SDKStartGame, SKDStartGameWithoutAd } from "../../lib/poki-sdk";
+import Tutorial from "./tutorial";
 
 export default function Menu() {
   const { gameState } = useGameControllerStore();
@@ -192,6 +193,7 @@ function MainMenu() {
 
   return (
     <>
+      <Tutorial />
       <div className="absolute top-0 bottom-0 my-auto right-5 lg:right-[5vw] h-min flex flex-col gap-5 lg:gap-10">
         <ButtonMenu icon={<InternetIcon />} onClick={handleOpenFriendlyMenu}>
           Play vs Friend

@@ -25,7 +25,7 @@ export default function Opponent() {
       };
 
       // Determine the interpolation speed factor
-      const lerpFactor = 0.25; // Adjust this value based on desired responsiveness
+      const lerpFactor = 0.2; // Adjust this value based on desired responsiveness
 
       // Calculate the interpolated position
       const interpolatedPosition = {

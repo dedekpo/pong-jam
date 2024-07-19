@@ -23,7 +23,7 @@ function CameraShakePowerUp() {
       yawFrequency={1.6} // Frequency of the the yaw rotation
       pitchFrequency={1.6} // Frequency of the pitch rotation
       rollFrequency={1.6} // Frequency of the roll rotation
-      intensity={1} // initial intensity of the shake
+      intensity={0.5} // initial intensity of the shake
       // decay
       // decayRate={0.3} // if decay = true this is the rate at which intensity will reduce at
     />

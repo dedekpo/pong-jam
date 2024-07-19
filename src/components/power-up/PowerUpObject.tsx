@@ -68,7 +68,7 @@ export default function PowerUpObject() {
           setTimeout(() => {
             setP1PowerUp(undefined);
             setP1State("none");
-          }, 10 * 1000);
+          }, 8 * 1000);
           break;
       }
     }, 2 * 1000);
