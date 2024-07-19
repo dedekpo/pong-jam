@@ -28,6 +28,7 @@ export default function Menu() {
 
   return (
     <div className="absolute top-0 left-0 h-screen w-screen overflow-hidden">
+      <Tutorial />
       {gameState === "FRIENDLY-MENU" && <FriendlyMatchMenu />}
       {gameState === "SEARCHING-ONLINE" && <SearchingMatchMenu />}
       {gameState === "MENU" && <MainMenu />}
@@ -193,7 +194,6 @@ function MainMenu() {
 
   return (
     <>
-      <Tutorial />
       <div className="absolute top-0 bottom-0 my-auto right-5 lg:right-[5vw] h-min flex flex-col gap-5 lg:gap-10">
         <ButtonMenu icon={<InternetIcon />} onClick={handleOpenFriendlyMenu}>
           Play vs Friend
